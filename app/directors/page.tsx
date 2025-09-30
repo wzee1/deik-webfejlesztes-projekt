@@ -43,7 +43,7 @@ export default async function DirectorsPage() {
   const directors = result.data
 
   return (
-    <div className="min-h-screen grid place-items-center -translate-y-24 sm:px-12">
+    <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
       <div className="w-[90vw] sm:w-full lg:w-[60vw]">
         <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
           <Link href="/" className="flex items-center p-2 rounded-lg">
@@ -52,9 +52,9 @@ export default async function DirectorsPage() {
           </Link>
         </Button>
 
-        <Card className="bg-card shadow-2xl border border-primaryColor/30 w-[90vw] sm:w-full lg:w-[60vw]">
+        <Card className="shadow-2xl bg-input/30 border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
           <CardHeader>
-            <CardTitle className="text-3xl font-extrabold tracking-tight text-primaryColor">
+            <CardTitle className="text-3xl font-extrabold tracking-tight">
               Directors
             </CardTitle>
           </CardHeader>
@@ -62,7 +62,7 @@ export default async function DirectorsPage() {
           <CardContent className="overflow-x-auto">
             <Table className="min-w-full">
               <TableHeader>
-                <TableRow className="bg-primaryColor/10 hover:bg-primaryColor/20  transition-colors">
+                <TableRow className="rounded-full bg-primaryColor/10 hover:bg-primaryColor/20  transition-colors">
                   {["Name", "Birth year", "Added by", "Added at"].map(t => (
                     <TableHead className="text-lg font-semibold" key={t}>
                       {t}
