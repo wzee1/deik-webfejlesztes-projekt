@@ -1,3 +1,7 @@
+"use client"
+
+import { useState } from "react"
+
 import { Movie } from "@/actions/movies.actions"
 import Link from "next/link"
 
@@ -10,12 +14,24 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-import { Calendar, User, Film, ArrowLeft } from "lucide-react"
+import { Calendar, User, Film, ArrowLeft, Pencil, Trash } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import MovieFormModal from "./movie-form-modal"
+import DeleteMovieModal from "./delete-movie-modal"
+import { Director } from "@/actions/directors.actions"
+
+type Props = {
+  movie: Movie,
+  directors: Director[]
+}
+
 export default function MoviePage(
-  { movie }: { movie: Movie }
+  { movie, directors }: Props
 ) {
+  const [openEditMovieModal, setOpenEditMovieModal] = useState(false)
+  const [openRemoveMovieModal, setOpenRemoveMovieModal] = useState(false)
+
   const data = [
     {
       id: "Director",
@@ -68,41 +84,83 @@ export default function MoviePage(
   ]
 
   return (
-    <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
-      <div className="w-[90vw] sm:w-full lg:w-[50vw]">
-        <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
-          <Link href="/movies" className="flex items-center p-2 rounded-lg">
-            <ArrowLeft className="w-5 h-5 mr-1" />
-            Back to all movies
-          </Link>
-        </Button>
+    <>
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
+        <div className="w-[90vw] sm:w-full lg:w-[50vw]">
+          <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
+            <Link href="/movies" className="flex items-center p-2 rounded-lg">
+              <ArrowLeft className="w-5 h-5 mr-1" />
+              Back to all movies
+            </Link>
+          </Button>
 
-        <Card className="w-full shadow-2xl bg-input/30 border border-input">
-          <CardHeader className="border-b border-input pb-4">
-            <CardTitle className="flex items-center text-4xl font-extrabold tracking-tight text-white">
-              <Film className="w-8 h-8 mr-3 text-primaryColor" />
-              {movie.title}
-            </CardTitle>
-          </CardHeader>
+          <Card className="w-full shadow-2xl bg-input/30 border border-input">
+            <CardHeader className="border-b border-input pb-4 flex justify-between items-center">
+              <CardTitle className="flex items-center text-4xl font-extrabold tracking-tight text-white">
+                <Film className="w-8 h-8 mr-3 text-primaryColor" />
+                {movie.title}
+              </CardTitle>
 
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {data.map(({ id, value, colSpan }) => (
-                <div key={id} className={cn(
-                  "flex flex-col space-y-1",
-                  colSpan && colSpan
-                )}>
-                  <span className="text-sm font-medium text-gray-400">
-                    {id}
-                  </span>
-                  {value}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="w-8 md:w-fit h-8 rounded-2xl"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setOpenEditMovieModal(true)
+                  }}
+                >
+                  <Pencil className="w-2 h-2 text-white" />
+                  <span className="max-lg:hidden">Edit movie</span>
+                </Button>
+
+                <Button
+                  variant="destructive"
+                  className="w-8 md:w-fit h-8 rounded-2xl hover:bg-red-500! transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setOpenRemoveMovieModal(true)
+                  }}
+                >
+                  <Trash className="w-2 h-2 text-white" />
+                  <span className="max-lg:hidden">Delete movie</span>
+                </Button>
+              </div>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {data.map(({ id, value, colSpan }) => (
+                  <div key={id} className={cn(
+                    "flex flex-col space-y-1",
+                    colSpan && colSpan
+                  )}>
+                    <span className="text-sm font-medium text-gray-400">
+                      {id}
+                    </span>
+                    {value}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+
+      <MovieFormModal
+        open={openEditMovieModal}
+        onOpenChange={setOpenEditMovieModal}
+        directors={directors}
+        movieToEdit={movie}
+        mode="edit"
+      />
+
+      <DeleteMovieModal
+        open={openRemoveMovieModal}
+        onOpenChange={setOpenRemoveMovieModal}
+        movieToDelete={movie}
+      />
+    </>
   )
 }
 
