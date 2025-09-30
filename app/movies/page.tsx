@@ -1,4 +1,5 @@
 import { getMovieById, getMovies, Movie } from "@/actions/movies.actions"
+import { getDirectors } from "@/actions/directors.actions"
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
@@ -16,9 +17,15 @@ export default async function Movies({ searchParams }: Props) {
   const movieId = params.id
   
   if (!movieId) {
-    const result = await getMovies()
+    const moviesResult = await getMovies()
+    const directorsResult = await getDirectors()
 
-    if (!result.success || !result.data) return (
+    if (
+      !moviesResult.success ||
+      !moviesResult.data ||
+      !directorsResult.success ||
+      !directorsResult.data
+    ) return (
       <div className="min-h-screen grid place-items-center -translate-y-24">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-red-400">
@@ -39,7 +46,12 @@ export default async function Movies({ searchParams }: Props) {
       </div>
     )
 
-    return <AllMovies movies={result.data} />
+    return (
+      <AllMovies
+        movies={moviesResult.data}
+        directors={directorsResult.data}
+      />
+    )
   }
 
   const result = await getMovieById(parseInt(movieId))
