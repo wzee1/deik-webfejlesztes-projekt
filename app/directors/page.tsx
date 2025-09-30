@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 
-import { Calendar, User } from "lucide-react"
+import { ArrowLeft, Calendar, User } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default async function DirectorsPage() {
   const result = await getDirectors()
@@ -42,65 +44,75 @@ export default async function DirectorsPage() {
 
   return (
     <div className="min-h-screen grid place-items-center -translate-y-24 sm:px-12">
-      <Card className="bg-card shadow-2xl border border-primaryColor/30 w-[90vw] sm:w-full lg:w-[60vw]">
-        <CardHeader>
-          <CardTitle className="text-3xl font-extrabold tracking-tight text-primaryColor">
-            Directors
-          </CardTitle>
-        </CardHeader>
+      <div className="w-[90vw] sm:w-full lg:w-[60vw]">
+        <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
+          <Link href="/" className="flex items-center p-2 rounded-lg">
+            <ArrowLeft className="w-5 h-5 mr-1" />
+            Back to home page
+          </Link>
+        </Button>
 
-        <CardContent className="overflow-x-auto">
-          <Table className="min-w-full">
-            <TableHeader>
-              <TableRow className="bg-primaryColor/10 hover:bg-primaryColor/20  transition-colors">
-                {["Name", "Birth year", "Added by", "Added at"].map(t => (
-                  <TableHead className="text-lg font-semibold" id={t}>
-                    {t}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
+        <Card className="bg-card shadow-2xl border border-primaryColor/30 w-[90vw] sm:w-full lg:w-[60vw]">
+          <CardHeader>
+            <CardTitle className="text-3xl font-extrabold tracking-tight text-primaryColor">
+              Directors
+            </CardTitle>
+          </CardHeader>
 
-            <TableBody>
-              {directors.map((director: Director) => (
-                <TableRow
-                  key={director.id}
-                  className="hover:bg-primaryColor/5 transition-colors group"
-                >
-                  {/* Name */}
-                  <TableCell className="text-gray-200 group-hover:text-white transition-colors">
-                    {director.name}
-                  </TableCell>
-                  
-                  {/* Birth year */}
-                  <TableCell className="text-white">
-                    <Badge
-                      variant="secondary"
-                      className="bg-secondaryColor/80 hover:bg-secondaryColor transition-colors font-bold"
-                    >
-                      <Calendar className="w-4 h-4 mr-1 stroke-white" />
-                      {director.birthYear || "N/A"}
-                    </Badge>
-                  </TableCell>
-                  
-                  {/* Added by */}
-                  <TableCell>
-                    <div className="flex items-center">
-                      <User className="w-4 h-4 mr-1" />
-                      {director.addedByName}
-                    </div>
-                  </TableCell>
-                  
-                  {/* Added at */}
-                  <TableCell>
-                    {new Date(director.createdAt).toLocaleDateString()}
-                  </TableCell>
+          <CardContent className="overflow-x-auto">
+            <Table className="min-w-full">
+              <TableHeader>
+                <TableRow className="bg-primaryColor/10 hover:bg-primaryColor/20  transition-colors">
+                  {["Name", "Birth year", "Added by", "Added at"].map(t => (
+                    <TableHead className="text-lg font-semibold" key={t}>
+                      {t}
+                    </TableHead>
+                  ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+
+              <TableBody>
+                {directors.map((director: Director) => (
+                  <TableRow
+                    key={director.id}
+                    className="hover:bg-primaryColor/5 transition-colors group"
+                  >
+                    {/* Name */}
+                    <TableCell className="text-gray-200 group-hover:text-white transition-colors">
+                      {director.name}
+                    </TableCell>
+                    
+                    {/* Birth year */}
+                    <TableCell className="text-white">
+                      <Badge
+                        variant="secondary"
+                        className="bg-secondaryColor/80 hover:bg-secondaryColor transition-colors font-bold"
+                      >
+                        <Calendar className="w-4 h-4 mr-1 stroke-white" />
+                        {director.birthYear || "N/A"}
+                      </Badge>
+                    </TableCell>
+                    
+                    {/* Added by */}
+                    <TableCell>
+                      <div className="flex items-center">
+                        <User className="w-4 h-4 mr-1" />
+                        {director.addedByName}
+                      </div>
+                    </TableCell>
+                    
+                    {/* Added at */}
+                    <TableCell>
+                      {new Date(director.createdAt).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
+
