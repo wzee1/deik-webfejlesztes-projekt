@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "db:seed": "tsx ./lib/db/seed/index.ts"
   },
   "dependencies": {
     "@radix-ui/react-alert-dialog": "^1.1.15",
