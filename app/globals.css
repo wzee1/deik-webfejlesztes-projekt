@@ -4,6 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-primaryColor: var(--primary-color);
+  --color-secondaryColor: var(--secondary-color);
+
+  /* shadcn ui variables: */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -44,6 +48,10 @@
 }
 
 :root {
+  --primary-color: oklch(65.067% 0.18106 257.683);
+  --secondary-color: oklch(58.401% 0.20741 258.85);
+
+  /* shadcn/ui variables */
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -79,7 +87,11 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --color-primary: oklch(66.139% 0.17648 257.355);
+  --secondaryColor: oklch(82.9% 0.089 257.7);
+
+  /* shadcn/ui variables */
+  --background: #1f1f1f;
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
