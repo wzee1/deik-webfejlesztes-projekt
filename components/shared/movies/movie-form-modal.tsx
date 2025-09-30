@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 
-import { createMovie } from "@/actions/movies.actions"
+import { Movie, createMovie, updateMovie } from "@/actions/movies.actions"
 import { Director } from "@/actions/directors.actions"
 
 import { z } from "zod"
@@ -43,18 +43,13 @@ import {
 
 import { Film, Loader2 } from "lucide-react"
 
-// Zod schema for client-side validation:
-const addMovieSchema = z.object({
-  title: z
-    .string()
+// Zod schema for client-side validation
+const movieFormSchema = z.object({
+  title: z.string()
     .min(1, "Title is required!")
     .max(255, "Title must be 255 characters or less!"),
-  directorId: z
-    .string()
-    .min(1, "Director is required!"),
-  releaseYear: z
-    .string()
-    .optional()
+  directorId: z.string().min(1, "Director is required!"),
+  releaseYear: z.string().optional()
     .refine(
       (val) => !val || val === "" || !isNaN(parseInt(val)),
       "Release year must be a valid number!"
@@ -70,20 +65,30 @@ const addMovieSchema = z.object({
   description: z.string().optional(),
 })
 
-type AddMovieFormValues = z.infer<typeof addMovieSchema>
+type MovieFormValues = z.infer<typeof movieFormSchema>
 
 type Props = {
   open: boolean
   onOpenChange: (open: boolean) => void
   directors: Director[]
+  mode: "add" | "edit"
+  movieToEdit?: Movie
 }
 
-export default function AddMovieModal({ open, onOpenChange, directors }: Props) {
+export default function MovieFormModal({
+  open,
+  onOpenChange,
+  directors,
+  mode,
+  movieToEdit
+}: Props) {
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()
 
-  const form = useForm<AddMovieFormValues>({
-    resolver: zodResolver(addMovieSchema),
+  const isEditMode = mode === "edit"
+
+  const form = useForm<MovieFormValues>({
+    resolver: zodResolver(movieFormSchema),
     defaultValues: {
       title: "",
       directorId: "",
@@ -92,34 +97,48 @@ export default function AddMovieModal({ open, onOpenChange, directors }: Props) 
     },
   })
 
-  const onSubmit = async (values: AddMovieFormValues) => {
+  // Reset form when modal opens or movieToEdit changes
+  useEffect(() => {
+    if (open) {
+      form.reset({
+        title: movieToEdit?.title || "",
+        directorId: movieToEdit?.directorId.toString() || "",
+        releaseYear: movieToEdit?.releaseYear?.toString() || "",
+        description: movieToEdit?.description || "",
+      })
+    }
+  }, [open, movieToEdit, form])
+
+  const onSubmit = async (values: MovieFormValues) => {
     setIsPending(true)
 
     const formData = new FormData()
-
     formData.append("title", values.title)
     formData.append("directorId", values.directorId)
-
+    
     if (values.releaseYear)
       formData.append("releaseYear", values.releaseYear)
     
     if (values.description)
       formData.append("description", values.description)
 
-    const result = await createMovie(formData)
+    const result = isEditMode && movieToEdit
+      ? await updateMovie(movieToEdit.id, formData)
+      : await createMovie(formData)
 
     if (result.success) {
-      toast.success("Movie added successfully!")
-
+      toast.success(
+        isEditMode ? "Movie updated successfully!" : "Movie added successfully!"
+      )
+      
       form.reset()
       onOpenChange(false)
-
       router.refresh()
-      setIsPending(false)
     } else {
       toast.error(result.message)
-      setIsPending(false)
     }
+
+    setIsPending(false)
   }
 
   return (
@@ -128,10 +147,12 @@ export default function AddMovieModal({ open, onOpenChange, directors }: Props) 
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-2xl">
             <Film className="w-6 h-6" />
-            Add New Movie
+            {isEditMode ? "Edit Movie" : "Add New Movie"}
           </DialogTitle>
           <DialogDescription>
-            Fill in the details below to add a new movie to the database.
+            {isEditMode
+              ? "Update the details below to edit the movie."
+              : "Fill in the details below to add a new movie to the database."}
           </DialogDescription>
         </DialogHeader>
 
@@ -256,10 +277,10 @@ export default function AddMovieModal({ open, onOpenChange, directors }: Props) 
                 {isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Adding...
+                    {isEditMode ? "Updating..." : "Adding..."}
                   </>
                 ) : (
-                  "Add Movie"
+                  isEditMode ? "Update Movie" : "Add Movie"
                 )}
               </Button>
             </div>

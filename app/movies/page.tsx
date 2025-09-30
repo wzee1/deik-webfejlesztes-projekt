@@ -16,9 +16,10 @@ export default async function Movies({ searchParams }: Props) {
   const params = (await searchParams)
   const movieId = params.id
   
+  const directorsResult = await getDirectors()
+
   if (!movieId) {
     const moviesResult = await getMovies()
-    const directorsResult = await getDirectors()
 
     if (
       !moviesResult.success ||
@@ -54,18 +55,34 @@ export default async function Movies({ searchParams }: Props) {
     )
   }
 
-  const result = await getMovieById(parseInt(movieId))
+  const movieResult = await getMovieById(parseInt(movieId))
 
-  if (!result.success || !result.data) return (
+  const errMessages = {
+    header: (!movieResult.success || !movieResult.data)
+      ? "No movies were found with given ID." : "Unexpected error",
+    desc: (!movieResult.success || !movieResult.data)
+      ? (
+        <>
+          To properly fetch a movie's information enter:<br />
+          /movies?id=movieIdHere
+        </>
+      ) : "Unexpected error occurred while fetching movies"
+  }
+
+  if (
+    !movieResult.success
+    || !movieResult.data
+    || !directorsResult.success
+    || !directorsResult.data
+  ) return (
     <div className="min-h-screen grid place-items-center -translate-y-24">
       <div className="text-center">
         <h1 className="text-4xl font-bold text-red-400">
-          No movies were found with given ID.
+          {errMessages.header}
         </h1>
         
         <p className="text-lg text-gray-500 mt-2">
-          To properly fetch a movie's information enter:<br />
-          /movies?id=movieIdHere
+          {errMessages.desc}
         </p>
 
         <Button asChild className="mt-6 bg-gray-200 hover:bg-gray-300/90">
@@ -78,8 +95,11 @@ export default async function Movies({ searchParams }: Props) {
     </div>
   )
 
-  const movie: Movie = result.data
-
-  return <MoviePage movie={movie} />
+  return (
+    <MoviePage
+      movie={movieResult.data}
+      directors={directorsResult.data}
+    />
+  )
 }
 
