@@ -127,7 +127,7 @@ export default function AllMovies(
 
                       <Button
                         variant="outline"
-                        className="w-8 h-8 rounded-2xl hover:bg-primaryColor!"
+                        className="w-8 h-8 rounded-2xl hover:bg-primaryColor! opacity-0 group-hover:opacity-100"
                         onClick={(e) => {
                           e.stopPropagation()
                           setMovieToEdit(movie)
