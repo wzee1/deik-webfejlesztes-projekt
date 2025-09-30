@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 import { Movie } from "@/actions/movies.actions"
-import { Search, Film, ArrowLeft, PlusIcon } from "lucide-react"
+import { Search, Film, ArrowLeft, PlusIcon, Pencil } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import AddMovieModal from "./add-movie-modal"
 import { Director } from "@/actions/directors.actions"
+import MovieFormModal from "./movie-form-modal"
 
 type Props = {
   movies: Movie[],
@@ -26,6 +26,9 @@ export default function AllMovies(
   const [isPending, startTransition] = useTransition()
   
   const [openAddMovieModal, setOpenAddMovieModal] = useState(false)
+  const [openEditMovieModal, setOpenEditMovieModal] = useState(false)
+  const [movieToEdit, setMovieToEdit] = useState<Movie | undefined>(undefined)
+
   const [searchTerm, setSearchTerm] = useState("")
   
   const filteredMovies = movies.filter((movie: Movie) =>
@@ -117,21 +120,34 @@ export default function AllMovies(
                   onClick={() => handleMovieClick(movie.id)}
                 >
                   <div className="p-4">
-                    <h3 className="font-semibold text-lg mb-1 line-clamp-1 transition-colors">
-                      {movie.title}
-                    </h3>
+                    <div className="flex justify-between items-center mb-1">
+                      <h3 className="font-semibold text-lg max-w-[8rem] truncate transition-colors">
+                        {movie.title}
+                      </h3>
+
+                      <Button
+                        variant="outline"
+                        className="w-8 h-8 rounded-2xl hover:bg-primaryColor!"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setMovieToEdit(movie)
+                          setOpenEditMovieModal(true)
+                        }}
+                      >
+                        <Pencil className="w-2 h-2 text-white" />
+                      </Button>
+                    </div>
                     
                     <div className="space-y-1 text-sm text-gray-300">
                       {movie.releaseYear && (
-                        <p className="line-clamp-1">
+                        <p className="max-w-[11rem] truncate">
                           Released in {movie.releaseYear}
                         </p>
                       )}
                       
                       {movie.director && (
-                        <p className="line-clamp-1">
-                          <span className="font-medium">Director:</span>
-                          {" "}{movie.director.name}
+                        <p className="max-w-[11rem] truncate">
+                          Director by {movie.director.name}
                         </p>
                       )}
                     </div>
@@ -154,10 +170,19 @@ export default function AllMovies(
         </div>
       </div>
     
-      <AddMovieModal
+      <MovieFormModal
         open={openAddMovieModal}
         onOpenChange={setOpenAddMovieModal}
         directors={directors}
+        mode="add"
+      />
+
+      <MovieFormModal
+        open={openEditMovieModal}
+        onOpenChange={setOpenEditMovieModal}
+        directors={directors}
+        movieToEdit={movieToEdit}
+        mode="edit"
       />
     </>
   )
