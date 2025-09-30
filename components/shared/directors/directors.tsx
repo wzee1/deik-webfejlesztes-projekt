@@ -18,11 +18,22 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
-import { ArrowLeft, Calendar, PersonStanding, Search, User } from "lucide-react"
+import {
+  ArrowLeft, Calendar, Pencil,
+  PlusIcon,
+  Search, Trash, User
+} from "lucide-react"
+import DirectorFormModal from "./director-form-modal"
+import DeleteDirectorModal from "./delete-director-modal"
 
 export default function Directors(
   { directors }: { directors: Director[] }
 ) {
+  const [openAddDirectorModal, setOpenAddDirectorModal] = useState(false)
+  const [openEditDirectorModal, setOpenEditDirectorModal] = useState(false)
+  const [openRemoveDirectorModal, setOpenRemoveDirectorModal] = useState(false)
+  const [selectedDirector, setSelectedDirector] = useState<Director | undefined>(undefined)
+
   const [searchTerm, setSearchTerm] = useState("")
 
   const filteredDirectors = directors.filter((director: Director) =>
@@ -33,105 +44,166 @@ export default function Directors(
   )
 
   return (
-    <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
-      <div className="w-[90vw] sm:w-full lg:w-[60vw]">
-        <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
-          <Link href="/" className="flex items-center p-2 rounded-lg">
-            <ArrowLeft className="w-5 h-5 mr-1" />
-            Back to home page
-          </Link>
-        </Button>
+    <>
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
+        <div className="w-[90vw] sm:w-full lg:w-[60vw]">
+          <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
+            <Link href="/" className="flex items-center p-2 rounded-lg">
+              <ArrowLeft className="w-5 h-5 mr-1" />
+              Back to home page
+            </Link>
+          </Button>
 
-        <Card className="shadow-2xl bg-input/30 border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
-          <CardHeader>
-            <CardTitle className="text-3xl font-extrabold tracking-tight">
-              Directors
-            </CardTitle>
-          </CardHeader>
+          <Card className="shadow-2xl bg-input/30 border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
+            <CardHeader className="flex justify-between items-center">
+              <CardTitle className="text-3xl font-extrabold tracking-tight">
+                Directors
+              </CardTitle>
 
-          <div className="relative px-6">
-            <Search className="absolute left-9 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <Input
-              type="text"
-              placeholder="Search by name, birth year, by who added the director or when..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-36 h-12 text-base"
-            />
+              <Button
+                variant="primary"
+                className="w-8 h-8 rounded-2xl"
+                onClick={() => setOpenAddDirectorModal(true)}
+              >
+                <PlusIcon className="w-8 h-8 text-white" />
+              </Button>
+            </CardHeader>
 
-            {searchTerm && (
-              <p className="absolute right-10 top-[2.5px] text-sm text-gray-200 mt-3">
-                Found {filteredDirectors.length} {filteredDirectors.length === 1 ? "director" : "directors"}
-              </p>
-            )}
-          </div>
+            <div className="relative px-6">
+              <Search className="absolute left-9 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Input
+                type="text"
+                placeholder="Search by name, birth year, by who added the director or when..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-36 h-12 text-base"
+              />
 
-          <CardContent className="overflow-x-auto">
-            <Table className="min-w-full">
-              <TableHeader>
-                <TableRow className="rounded-full bg-primaryColor/10 hover:bg-primaryColor/20  transition-colors">
-                  {["Name", "Birth year", "Added by", "Added at"].map(t => (
-                    <TableHead className="text-lg font-semibold" key={t}>
-                      {t}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-
-              {filteredDirectors.length === 0 && (
-                <TableBody>
-                  <TableRow className="hover:bg-transparent">
-                    <h2 className="text-xl font-semibold ml-2 mt-8">
-                      No directors found
-                    </h2>
-                    <p className="text-base text-gray-400 ml-2 mb-8">
-                      Try adjusting your search criteria!
-                    </p>
-                  </TableRow>
-                </TableBody>
+              {searchTerm && (
+                <p className="absolute right-10 top-[2.5px] text-sm text-gray-200 mt-3">
+                  Found {filteredDirectors.length} {filteredDirectors.length === 1 ? "director" : "directors"}
+                </p>
               )}
-                  
-              <TableBody>
-                {filteredDirectors.length > 1 && filteredDirectors.map((director: Director) => (
-                  <TableRow
-                    key={director.id}
-                    className="hover:bg-primaryColor/5 transition-colors group"
-                  >
-                    {/* Name */}
-                    <TableCell className="text-gray-200 group-hover:text-white transition-colors">
-                      {director.name}
-                    </TableCell>
-                    
-                    {/* Birth year */}
-                    <TableCell className="text-white">
-                      <Badge
-                        variant="secondary"
-                        className="bg-secondaryColor/80 hover:bg-secondaryColor transition-colors font-bold"
-                      >
-                        <Calendar className="w-4 h-4 mr-1 stroke-white" />
-                        {director.birthYear || "N/A"}
-                      </Badge>
-                    </TableCell>
-                    
-                    {/* Added by */}
-                    <TableCell>
-                      <div className="flex items-center">
-                        <User className="w-4 h-4 mr-1" />
-                        {director.addedByName}
-                      </div>
-                    </TableCell>
-                    
-                    {/* Added at */}
-                    <TableCell>
-                      {new Date(director.createdAt).toLocaleDateString()}
-                    </TableCell>
+            </div>
+
+            <CardContent className="overflow-x-auto">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow className="rounded-full bg-primaryColor/10 hover:bg-primaryColor/20  transition-colors">
+                    {["Name", "Birth year", "Added by", "Added at"].map(t => (
+                      <TableHead className="text-lg font-semibold" key={t}>
+                        {t}
+                      </TableHead>
+                    ))}
+
+                    {/* Need this for the edit/remove functionality */}
+                    <TableHead />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+
+                {filteredDirectors.length === 0 && (
+                  <TableBody>
+                    <TableRow className="hover:bg-transparent">
+                      <h2 className="text-xl font-semibold ml-2 mt-8">
+                        No directors found
+                      </h2>
+                      <p className="text-base text-gray-400 ml-2 mb-8">
+                        Try adjusting your search criteria!
+                      </p>
+                    </TableRow>
+                  </TableBody>
+                )}
+                    
+                <TableBody>
+                  {filteredDirectors.length > 1 && filteredDirectors.map((director: Director) => (
+                    <TableRow
+                      key={director.id}
+                      className="hover:bg-primaryColor/5 transition-colors group relative"
+                    >
+                      {/* Name */}
+                      <TableCell className="text-gray-200 group-hover:text-white transition-colors">
+                        {director.name}
+                      </TableCell>
+                      
+                      {/* Birth year */}
+                      <TableCell className="text-white">
+                        <Badge
+                          variant="secondary"
+                          className="bg-secondaryColor/80 hover:bg-secondaryColor transition-colors font-bold"
+                        >
+                          <Calendar className="w-4 h-4 mr-1 stroke-white" />
+                          {director.birthYear || "N/A"}
+                        </Badge>
+                      </TableCell>
+                      
+                      {/* Added by */}
+                      <TableCell>
+                        <div className="flex items-center">
+                          <User className="w-4 h-4 mr-1" />
+                          {director.addedByName}
+                        </div>
+                      </TableCell>
+                      
+                      {/* Added at */}
+                      <TableCell>
+                        {new Date(director.createdAt).toLocaleDateString()}
+                      </TableCell>
+
+                      <TableCell>
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 flex gap-2">
+                          <Button
+                            variant="outline"
+                            className="w-4 md:w-fit h-6 rounded-2xl"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedDirector(director)
+                              setOpenEditDirectorModal(true)
+                            }}
+                          >
+                            <Pencil className="w-2 h-2 text-white" />
+                          </Button>
+
+                          <Button
+                            variant="destructive"
+                            className="w-4 md:w-fit h-6 rounded-2xl hover:bg-red-500! transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setSelectedDirector(director)
+                              setOpenRemoveDirectorModal(true)
+                            }}
+                          >
+                            <Trash className="w-2 h-2 text-white" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    
+      <DirectorFormModal
+        open={openAddDirectorModal}
+        onOpenChange={setOpenAddDirectorModal}
+        mode="add"
+        directorToEdit={selectedDirector}
+      />
+
+      <DirectorFormModal
+        open={openEditDirectorModal}
+        onOpenChange={setOpenEditDirectorModal}
+        mode="edit"
+        directorToEdit={selectedDirector}
+      />
+
+      <DeleteDirectorModal
+        open={openRemoveDirectorModal}
+        onOpenChange={setOpenRemoveDirectorModal}
+        directorToDelete={selectedDirector}
+      />
+    </>
   )
 }
