@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useTransition } from "react"
+import { useState, useTransition } from "react"
 
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -14,29 +14,16 @@ import { Input } from "@/components/ui/input"
 export default function AllMovies(
   { movies }: { movies: Movie[] }
 ) {
-  const [filteredMovies, setFilteredMovies] = useState<Movie[]>(movies)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isPending, startTransition] = useTransition()
   const router = useRouter()
-
-  useEffect(() => {
-    const query = searchQuery.toLowerCase().trim()
-    
-    if (!query) {
-      setFilteredMovies(movies)
-      return
-    }
-
-    const filtered = movies.filter((movie) => {
-      const titleMatch = movie.title?.toLowerCase().includes(query)
-      const directorMatch = movie.director?.name.toLowerCase().includes(query)
-      const yearMatch = movie.releaseYear?.toString().includes(query)
-      
-      return titleMatch || directorMatch || yearMatch
-    })
-
-    setFilteredMovies(filtered)
-  }, [searchQuery, movies])
+  const [isPending, startTransition] = useTransition()
+  
+  const [searchTerm, setSearchTerm] = useState("")
+  
+  const filteredMovies = movies.filter((movie: Movie) =>
+    movie.title?.toLowerCase().includes(searchTerm.toLowerCase())
+    || movie.director?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    || movie.releaseYear?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const handleMovieClick = (movieId: number) => {
     startTransition(() => {
@@ -77,19 +64,19 @@ export default function AllMovies(
           <Input
             type="text"
             placeholder="Search by title, director, or year..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 pr-32 h-12 text-base"
           />
 
-          {searchQuery && (
+          {searchTerm && (
             <p className="absolute right-4 top-[2.5px] text-sm text-gray-200 mt-3">
               Found {filteredMovies.length} {filteredMovies.length === 1 ? "movie" : "movies"}
             </p>
           )}
         </div>
 
-        {filteredMovies.length === 0 ? (
+        {filteredMovies.length === 0 && (
           <div className="text-center py-16">
             <Film className="w-16 h-16 mx-auto mb-4" />
             <h2 className="text-2xl font-semibold">
@@ -99,9 +86,11 @@ export default function AllMovies(
               Try adjusting your search criteria!
             </p>
           </div>
-        ) : (
+        )}
+
+        {filteredMovies.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-6">
-            {filteredMovies.map((movie) => (
+            {filteredMovies.map((movie: Movie) => (
               <div
                 key={movie.id}
                 className="group bg-input/30 hover:bg-input/50 border border-input rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer"
