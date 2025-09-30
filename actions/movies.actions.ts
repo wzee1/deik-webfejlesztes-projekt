@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db"
 import { directorsTable, moviesTable } from "@/lib/db/schema"
-import { and, asc, eq } from "drizzle-orm"
+import { and, asc, eq, not } from "drizzle-orm"
 import { TEST_USER } from "@/lib/db/seed/test-user"
 import z from "zod"
 
@@ -237,6 +237,185 @@ export async function createMovie(formData: FormData) {
     return {
       success: false,
       message: "Unexpected error occurred while adding the movie!",
+      data: null
+    }
+  }
+}
+
+const updateMovieSchema = z.object({
+  title: z.string().trim()
+    .min(1, "Title is required!")
+    .max(255, "Title must be 255 characters or less!"),
+  releaseYear: z.string().trim().optional()
+    .refine(
+      (val) => !val || val === "" || !isNaN(parseInt(val)),
+      "Release year must be a valid number!"
+    )
+    .transform((val) => (val && val !== "" ? parseInt(val) : null))
+    .refine(
+      (val) => val === null || (val >= 1800 && val <= new Date().getFullYear() + 10),
+      `Release year must be between 1800 and ${new Date().getFullYear() + 10}!`
+    ),
+  description: z.string().trim().optional()
+    .transform((val) => val || null),
+  directorId: z.string().trim()
+    .min(1, "Director is required!")
+    .transform((val) => parseInt(val))
+    .refine((val) => !isNaN(val), "Invalid director ID!")
+})
+
+export async function updateMovie(id: number, formData: FormData) {
+  try {
+    // TODO: implement validating request:
+    // const { userId } = await auth()
+    // if (!userId) return {
+    //   success: false,
+    //   message: "You must be logged in to update a movie.",
+    //   data: null
+    // }
+
+    // Check if movie exists
+    const existingMovie = await db.query.moviesTable.findFirst({
+      where: eq(moviesTable.id, id)
+    })
+
+    if (!existingMovie) return {
+      success: false,
+      message: `Movie with ID ${id} not found!`,
+      data: null
+    }
+
+    // TODO: Check if user owns this movie
+    // if (existingMovie.userId !== userId) return {
+    //   success: false,
+    //   message: "You don't have permission to update this movie!",
+    //   data: null
+    // }
+
+    // Extract form data
+    const rawData = {
+      title: formData.get("title")?.toString(),
+      releaseYear: formData.get("releaseYear")?.toString(),
+      description: formData.get("description")?.toString(),
+      directorId: formData.get("directorId")?.toString()
+    }
+
+    // Validate with Zod
+    const validationResult = updateMovieSchema.safeParse(rawData)
+
+    if (!validationResult.success) return {
+      success: false,
+      message: validationResult.error.issues[0].message,
+      data: null
+    }
+
+    const { title, releaseYear, description, directorId } = validationResult.data
+
+    // Check if director exists
+    const directorExists = await db.query.directorsTable.findFirst({
+      where: eq(directorsTable.id, directorId)
+    })
+
+    if (!directorExists) return {
+      success: false,
+      message: "Selected director does not exist!",
+      data: null
+    }
+
+    // Check for duplicate movie (same title and director, but different id)
+    const duplicateMovie = await db.query.moviesTable.findFirst({
+      where: and(
+        eq(moviesTable.title, title),
+        eq(moviesTable.directorId, directorId),
+        not(eq(moviesTable.id, id))
+      )
+    })
+
+    if (duplicateMovie) return {
+      success: false,
+      message: "A movie with this title and director already exists!",
+      data: null
+    }
+
+    // Update movie in database
+    const [updatedMovie] = await db.update(moviesTable)
+      .set({
+        title,
+        releaseYear,
+        description,
+        directorId,
+      })
+      .where(eq(moviesTable.id, id))
+      .returning()
+
+    return {
+      success: true,
+      message: "Movie updated successfully!",
+      data: {
+        id: updatedMovie.id,
+        title: updatedMovie.title,
+        releaseYear: updatedMovie.releaseYear,
+        description: updatedMovie.description,
+        directorId: updatedMovie.directorId,
+        userId: updatedMovie.userId,
+        createdAt: updatedMovie.createdAt
+      }
+    }
+
+  } catch (error) {
+    return {
+      success: false,
+      message: "Unexpected error occurred while updating the movie!",
+      data: null
+    }
+  }
+}
+
+export async function deleteMovie(id: number) {
+  try {
+    // TODO: implement validating request:
+    // const { userId } = await auth()
+    // if (!userId) return {
+    //   success: false,
+    //   message: "You must be logged in to delete a movie.",
+    //   data: null
+    // }
+
+    // Check if movie exists
+    const existingMovie = await db.query.moviesTable.findFirst({
+      where: eq(moviesTable.id, id)
+    })
+
+    if (!existingMovie) return {
+      success: false,
+      message: `Movie with ID ${id} not found!`,
+      data: null
+    }
+
+    // TODO: Check if user owns this movie
+    // if (existingMovie.userId !== userId) return {
+    //   success: false,
+    //   message: "You don't have permission to delete this movie!",
+    //   data: null
+    // }
+
+    // Delete movie from database
+    await db.delete(moviesTable)
+      .where(eq(moviesTable.id, id))
+
+    return {
+      success: true,
+      message: "Movie deleted successfully!",
+      data: {
+        id: existingMovie.id,
+        title: existingMovie.title
+      }
+    }
+
+  } catch (error) {
+    return {
+      success: false,
+      message: "Unexpected error occurred while deleting the movie!",
       data: null
     }
   }
