@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 import { Director } from "@/actions/directors.actions"
@@ -23,6 +24,7 @@ import {
   PlusIcon,
   Search, Trash, User
 } from "lucide-react"
+
 import DirectorFormModal from "./director-form-modal"
 import DeleteDirectorModal from "./delete-director-modal"
 
@@ -45,7 +47,7 @@ export default function Directors(
 
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-24 sm:px-12">
         <div className="w-[90vw] sm:w-full lg:w-[60vw]">
           <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
             <Link href="/" className="flex items-center p-2 rounded-lg">
@@ -104,12 +106,14 @@ export default function Directors(
                 {filteredDirectors.length === 0 && (
                   <TableBody>
                     <TableRow className="hover:bg-transparent">
-                      <h2 className="text-xl font-semibold ml-2 mt-8">
-                        No directors found
-                      </h2>
-                      <p className="text-base text-gray-400 ml-2 mb-8">
-                        Try adjusting your search criteria!
-                      </p>
+                      <TableCell>
+                        <h2 className="text-xl font-semibold ml-2 mt-8">
+                          No directors found
+                        </h2>
+                        <p className="text-base text-gray-400 ml-2 mb-4">
+                          Try adjusting your search criteria!
+                        </p>
+                      </TableCell>
                     </TableRow>
                   </TableBody>
                 )}

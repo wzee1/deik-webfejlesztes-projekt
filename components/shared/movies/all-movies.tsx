@@ -43,25 +43,9 @@ export default function AllMovies(
     })
   }
 
-  if (!movies || movies.length === 0) {
-    return (
-      <div className="min-h-screen grid place-items-center -translate-y-24">
-        <div className="text-center">
-          <Film className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold text-red-400">
-            No movies available
-          </h1>
-          <p className="text-lg text-gray-500 mt-2">
-            Check back later for new movies
-          </p>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-24 sm:px-12">
         <div className="min-w-[90vw] min-[950px]:min-w-[924px]">
           <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
             <Link href="/" className="flex items-center p-2 rounded-lg">
