@@ -1,7 +1,13 @@
 import { getDirectors } from "@/actions/directors.actions"
 import Directors from "@/components/shared/directors/directors"
 
+import { isAuthenticated } from "@/lib/auth/auth-functions"
+import { redirect } from "next/navigation"
+
 export default async function DirectorsPage() {
+  const valid = await isAuthenticated()
+  if (!valid) redirect("/login")
+
   const result = await getDirectors()
 
   // Uncomment this line to trigger error state:

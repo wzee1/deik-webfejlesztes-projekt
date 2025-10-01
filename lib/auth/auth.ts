@@ -7,6 +7,14 @@ export const auth = betterAuth({
     provider: "pg",
   }),
   emailAndPassword: { 
-    enabled: true, 
+    enabled: true,
+    requireEmailVerification: false
+  },
+  session: {
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day
   },
 })
+
+export type Session = typeof auth.$Infer.Session.session
+export type User = typeof auth.$Infer.Session.user

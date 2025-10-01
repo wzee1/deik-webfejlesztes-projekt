@@ -9,6 +9,8 @@ import { eq, and } from "drizzle-orm"
 import { TEST_USER } from "@/lib/db/seed/test-user"
 import { moviesTable } from "@/lib/db/schema"
 
+import { isAuthenticated, notAuthenticatedObject } from "@/lib/auth/auth-functions"
+
 export type Director = {
   id: number
   name: string
@@ -29,6 +31,9 @@ export type Director = {
 
 export async function getDirectors() {
   try {
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
+
     const directorsWithUser = await db.query.directorsTable.findMany({
       orderBy: [asc(directorsTable.name)],
       with: {
@@ -81,6 +86,9 @@ const directorSchema = z.object({
 
 export async function createDirector(formData: FormData) {
   try {
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
+
     const rawData = {
       name: formData.get("name")?.toString(),
       birthYear: formData.get("birthYear")?.toString(),
@@ -140,6 +148,9 @@ export async function createDirector(formData: FormData) {
 
 export async function updateDirector(id: number, formData: FormData) {
   try {
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
+
     const existingDirector = await db.query.directorsTable.findFirst({
       where: eq(directorsTable.id, id)
     })
@@ -207,6 +218,9 @@ export async function updateDirector(id: number, formData: FormData) {
 
 export async function deleteDirector(id: number) {
   try {
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
+
     const existingDirector = await db.query.directorsTable.findFirst({
       where: eq(directorsTable.id, id)
     })
