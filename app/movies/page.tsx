@@ -8,11 +8,17 @@ import { ArrowLeft } from "lucide-react"
 import AllMovies from "@/components/shared/movies/all-movies"
 import MoviePage from "@/components/shared/movies/movie-page"
 
+import { isAuthenticated } from "@/lib/auth/auth-functions"
+import { redirect } from "next/navigation"
+
 type Props = {
   searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
 export default async function Movies({ searchParams }: Props) {
+  const valid = await isAuthenticated()
+  if (!valid) redirect("/login")
+
   const params = (await searchParams)
   const movieId = params.id
   
@@ -29,7 +35,7 @@ export default async function Movies({ searchParams }: Props) {
     ) return (
       <div className="min-h-screen grid place-items-center -translate-y-24">
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-red-400">
+          <h1 className="text-4xl font-bold">
             Unexpected error
           </h1>
           
