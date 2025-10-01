@@ -17,6 +17,7 @@ export const metadata: Metadata = {
   description: "Discover Your Next Favorite Movie: Explore movies and directors added by users, add your favorite movie or director. Find your perfect film to watch tonight.",
 }
 
+import UserButton from "@/components/shared/auth/user-button"
 import { Toaster } from "@/components/ui/sonner"
 
 export default function RootLayout({
@@ -29,6 +30,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <div className="absolute right-4 top-4 z-10">
+          <UserButton />
+        </div>
+
         {/* Grid pattern background */}
         <div className="absolute -z-20 inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
         {children}
