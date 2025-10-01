@@ -2,9 +2,12 @@
 
 import { db } from "@/lib/db"
 import { directorsTable, moviesTable } from "@/lib/db/schema"
-import { and, asc, eq, not } from "drizzle-orm"
 import { TEST_USER } from "@/lib/db/seed/test-user"
+
 import z from "zod"
+import { and, asc, eq, not } from "drizzle-orm"
+
+import { isAuthenticated, notAuthenticatedObject } from "@/lib/auth/auth-functions"
 
 export type Movie = {
   id: number
@@ -27,6 +30,9 @@ export type Movie = {
 
 export async function getMovies() {
   try {
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
+
     const movies = await db.query.moviesTable.findMany({
       orderBy: [asc(moviesTable.title)],
       with: {
@@ -78,6 +84,9 @@ export async function getMovies() {
 
 export async function getMovieById(id: number) {
   try {
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
+
     const movie = await db.query.moviesTable.findFirst({
       where: eq(moviesTable.id, id),
       with: {
@@ -156,13 +165,8 @@ const createMovieSchema = z.object({
 
 export async function createMovie(formData: FormData) {
   try {
-    // TODO: implement validating request:
-    // const { userId } = await auth()
-    // if (!userId) return {
-    //   success: false,
-    //   message: "You must be logged in to add a movie.",
-    //   data: null
-    // }
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
 
     // Extract form data
     const rawData = {
@@ -266,13 +270,8 @@ const updateMovieSchema = z.object({
 
 export async function updateMovie(id: number, formData: FormData) {
   try {
-    // TODO: implement validating request:
-    // const { userId } = await auth()
-    // if (!userId) return {
-    //   success: false,
-    //   message: "You must be logged in to update a movie.",
-    //   data: null
-    // }
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
 
     // Check if movie exists
     const existingMovie = await db.query.moviesTable.findFirst({
@@ -373,13 +372,8 @@ export async function updateMovie(id: number, formData: FormData) {
 
 export async function deleteMovie(id: number) {
   try {
-    // TODO: implement validating request:
-    // const { userId } = await auth()
-    // if (!userId) return {
-    //   success: false,
-    //   message: "You must be logged in to delete a movie.",
-    //   data: null
-    // }
+    const valid = isAuthenticated()
+    if (!valid) return notAuthenticatedObject
 
     // Check if movie exists
     const existingMovie = await db.query.moviesTable.findFirst({
