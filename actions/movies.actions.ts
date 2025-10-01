@@ -7,7 +7,7 @@ import { TEST_USER } from "@/lib/db/seed/test-user"
 import z from "zod"
 import { and, asc, eq, not } from "drizzle-orm"
 
-import { isAuthenticated, notAuthenticatedObject } from "@/lib/auth/auth-functions"
+import { getCurrentUser, isAuthenticated, notAuthenticatedObject } from "@/lib/auth/auth-functions"
 
 export type Movie = {
   id: number
@@ -31,7 +31,8 @@ export type Movie = {
 export async function getMovies() {
   try {
     const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     const movies = await db.query.moviesTable.findMany({
       orderBy: [asc(moviesTable.title)],
@@ -52,27 +53,34 @@ export async function getMovies() {
       },
     })
 
-    const typedMovies: Movie[] = movies.map(m => ({
-      id: m.id,
-      title: m.title,
-      releaseYear: m.releaseYear,
-      description: m.description,
-      directorId: m.directorId,
-      userId: m.userId,
-      createdAt: m.createdAt,
-      director: m.director,
-      addedByUser: {
-        id: m.addedByUser.id,
-        name: m.addedByUser.name || "Ismeretlen felhasználó",
-      }
-    }))
+    if (movies.length > 0) {
+      const typedMovies: Movie[] = movies.map(m => ({
+        id: m.id,
+        title: m.title,
+        releaseYear: m.releaseYear,
+        description: m.description,
+        directorId: m.directorId,
+        userId: m.userId,
+        createdAt: m.createdAt,
+        director: m.director,
+        addedByUser: {
+          id: user.id,
+          name: user.name || "Unknown user",
+        }
+      }))
 
+      return {
+        success: true,
+        message: "Movies fetched successfully!",
+        data: typedMovies
+      }
+    }
+    
     return {
       success: true,
-      message: "Movies fetched successfully!",
-      data: typedMovies
+      message: "0 movies were fetched successfully!",
+      data: movies
     }
-
   } catch (error) {
     return {
       success: false,
@@ -85,7 +93,8 @@ export async function getMovies() {
 export async function getMovieById(id: number) {
   try {
     const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     const movie = await db.query.moviesTable.findFirst({
       where: eq(moviesTable.id, id),
@@ -122,8 +131,8 @@ export async function getMovieById(id: number) {
       createdAt: movie.createdAt,
       director: movie.director,
       addedByUser: {
-        id: movie.addedByUser.id,
-        name: movie.addedByUser.name || "Ismeretlen felhasználó",
+        id: user.id,
+        name: user.name || "Unknown user",
       }
     }
 
@@ -166,7 +175,8 @@ const createMovieSchema = z.object({
 export async function createMovie(formData: FormData) {
   try {
     const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     // Extract form data
     const rawData = {
@@ -218,8 +228,7 @@ export async function createMovie(formData: FormData) {
       releaseYear,
       description,
       directorId,
-      // TODO: add correct user id here
-      userId: TEST_USER.id,
+      userId: user.id,
       createdAt: new Date()
     }).returning()
 
@@ -271,7 +280,8 @@ const updateMovieSchema = z.object({
 export async function updateMovie(id: number, formData: FormData) {
   try {
     const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     // Check if movie exists
     const existingMovie = await db.query.moviesTable.findFirst({
@@ -284,12 +294,11 @@ export async function updateMovie(id: number, formData: FormData) {
       data: null
     }
 
-    // TODO: Check if user owns this movie
-    // if (existingMovie.userId !== userId) return {
-    //   success: false,
-    //   message: "You don't have permission to update this movie!",
-    //   data: null
-    // }
+    if (existingMovie.userId !== user.id) return {
+      success: false,
+      message: "You don't have permission to update this movie!",
+      data: null
+    }
 
     // Extract form data
     const rawData = {
@@ -373,7 +382,8 @@ export async function updateMovie(id: number, formData: FormData) {
 export async function deleteMovie(id: number) {
   try {
     const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     // Check if movie exists
     const existingMovie = await db.query.moviesTable.findFirst({
@@ -386,12 +396,11 @@ export async function deleteMovie(id: number) {
       data: null
     }
 
-    // TODO: Check if user owns this movie
-    // if (existingMovie.userId !== userId) return {
-    //   success: false,
-    //   message: "You don't have permission to delete this movie!",
-    //   data: null
-    // }
+    if (existingMovie.userId !== user.id) return {
+      success: false,
+      message: "You don't have permission to delete this movie!",
+      data: null
+    }
 
     // Delete movie from database
     await db.delete(moviesTable)
