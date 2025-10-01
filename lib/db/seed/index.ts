@@ -1,5 +1,5 @@
 import { db } from ".."
-import { directorsTable, moviesTable, usersTable } from "../schema"
+import { directorsTable, moviesTable, user as usersTable } from "../schema"
 import { TEST_USER } from "./test-user"
 import { seedDirectors } from "./directors"
 import { seedMovies } from "./movies"
