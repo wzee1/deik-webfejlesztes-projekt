@@ -119,7 +119,7 @@ export default function Directors(
                 )}
                     
                 <TableBody>
-                  {filteredDirectors.length > 1 && filteredDirectors.map((director: Director) => (
+                  {filteredDirectors.length > 0 && filteredDirectors.map((director: Director) => (
                     <TableRow
                       key={director.id}
                       className="hover:bg-primaryColor/5 transition-colors group relative"
