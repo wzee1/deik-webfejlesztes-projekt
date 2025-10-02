@@ -1,57 +1,27 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-
-import { Director, createDirector, updateDirector } from "@/actions/directors.actions"
+import { createDirector, updateDirector } from "@/actions/directors.actions"
+import { Director } from "@/actions/directors.actions"
 
 import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { PersonStanding } from "lucide-react"
 
-import { toast } from "sonner"
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import FormModal from "@/components/shared/form-modal"
 
 import {
-  Form,
-  FormControl,
   FormField,
   FormItem,
   FormLabel,
+  FormControl,
   FormMessage,
 } from "@/components/ui/form"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-import { PersonStanding, Loader2 } from "lucide-react"
-
-const directorFormSchema = z.object({
-  name: z.string()
-    .min(1, "Name is required!")
-    .max(255, "Name must be 255 characters or less!"),
-  birthYear: z.string().optional()
-    .refine(
-      (val) => !val || val === "" || !isNaN(parseInt(val)),
-      "Birth year must be a valid number!"
-    ).refine(
-      (val) => {
-        if (!val || val === "") return true
-        const year = parseInt(val)
-        return year >= 1800 && year <= new Date().getFullYear()
-      },
-      `Birth year must be between 1800 and ${new Date().getFullYear()}!`
-    ),
-})
-
-type DirectorFormValues = z.infer<typeof directorFormSchema>
+type FormType = {
+  name: string
+  birthYear?: string
+}
 
 type Props = {
   open: boolean
@@ -61,113 +31,149 @@ type Props = {
 }
 
 export default function DirectorFormModal({
-  open, onOpenChange, mode, directorToEdit
+  open,
+  onOpenChange,
+  mode,
+  directorToEdit
 }: Props) {
-  const [isPending, setIsPending] = useState(false)
-  const router = useRouter()
-  const isEditMode = mode === "edit"
-
-  const form = useForm<DirectorFormValues>({
-    resolver: zodResolver(directorFormSchema),
-    defaultValues: {
-      name: "",
-      birthYear: ""
-    },
+  const schema = z.object({
+    name: z.string()
+      .min(1, "Name is required!")
+      .max(255, "Name must be 255 characters or less!"),
+    birthYear: z.string().optional()
+      .refine(
+        (val) => !val || val === "" || !isNaN(parseInt(val)),
+        "Birth year must be a valid number!"
+      )
+      .refine(
+        (val) => {
+          if (!val || val === "") return true
+          const year = parseInt(val)
+          return year >= 1800 && year <= new Date().getFullYear()
+        },
+        `Birth year must be between 1800 and ${new Date().getFullYear()}!`
+      ),
   })
 
-  useEffect(() => {
-    if (open) {
-      form.reset({
-        name: directorToEdit?.name || "",
-        birthYear: directorToEdit?.birthYear?.toString() || "",
-      })
-    }
-  }, [open, directorToEdit, form])
+  const steps: Array<{
+    label: string
+    render: (form: any, isPending: boolean) => React.ReactNode
+  }> = [
+    {
+      label: "Core Info",
+      render: (form, isPending) => (
+        <>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  Name <span className="text-red-500">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter director name"
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-  const onSubmit = async (values: DirectorFormValues) => {
-    setIsPending(true)
+          <FormField
+            control={form.control}
+            name="birthYear"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Birth Year</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    placeholder="e.g., 1954"
+                    disabled={isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </>
+      ),
+    },
+    {
+      label: "Review",
+      render: (form) => {
+        const values = form.getValues()
 
+        return (
+          <>
+            <h3 className="text-xl font-semibold mb-1">Review Details</h3>
+
+            <p className="text-sm text-gray-400 mb-4">
+              Confirm the details above and press <span className="font-bold">
+                {mode === "edit" ? "Update" : "Add"} Director
+              </span> to save.
+            </p>
+
+            <div className="p-4 border rounded-lg bg-input/10">
+              <p>
+                <span className="font-semibold text-gray-300">Name:</span> {values.name}
+              </p>
+              {values.birthYear && (
+                <p>
+                  <span className="font-semibold text-gray-300">Birth Year:</span> {values.birthYear}
+                </p>
+              )}
+            </div>
+          </>
+        )
+      },
+    },
+  ]
+
+  // Explicitly typing the handleSubmit parameters
+  const handleSubmit = async (values: FormType, isEditMode: boolean) => {
     const formData = new FormData()
     formData.append("name", values.name)
     if (values.birthYear) formData.append("birthYear", values.birthYear)
 
-    const result = isEditMode && directorToEdit
+    return isEditMode && directorToEdit
       ? await updateDirector(directorToEdit.id, formData)
       : await createDirector(formData)
+  }
 
-    if (result.success) {
-      toast.success(isEditMode ? "Director updated successfully!" : "Director added successfully!")
-      form.reset()
-      onOpenChange(false)
-      router.refresh()
-    } else {
-      toast.error(result.message)
-    }
+  // Adjusting the transformation logic for `directorToEdit` to match `FormType`
+  const directorToEditData: FormType | undefined = directorToEdit
+    ? {
+        ...directorToEdit,
+        // Convert number or null to string or undefined
+        birthYear: directorToEdit.birthYear?.toString() || undefined,
+      }
+    : undefined
 
-    setIsPending(false)
+  const defaultValues: FormType = {
+    // Ensure default value is an empty string
+    name: directorToEdit?.name || "",
+    // Ensure default value is an empty string
+    birthYear: directorToEdit?.birthYear != null ? directorToEdit.birthYear.toString() : "",
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl">
-            <PersonStanding className="w-6 h-6" />
-            {isEditMode ? "Edit Director" : "Add New Director"}
-          </DialogTitle>
-          <DialogDescription>
-            {isEditMode ? "Update the details below to edit the director." : "Fill in the details below to add a new director."}
-          </DialogDescription>
-        </DialogHeader>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name <span className="text-red-500">*</span></FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter director name" disabled={isPending} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="birthYear"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Birth Year</FormLabel>
-                  <FormControl>
-                    <Input type="number" placeholder="e.g., 1954" disabled={isPending} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-3 pt-4">
-              <Button type="button" variant="outline" onClick={() => { form.reset(); onOpenChange(false) }} disabled={isPending} className="flex-1">
-                Cancel
-              </Button>
-              <Button type="submit" variant="primary" disabled={isPending} className="flex-1">
-                {isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {isEditMode ? "Updating..." : "Adding..."}
-                  </>
-                ) : (
-                  isEditMode ? "Update Director" : "Add Director"
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <FormModal
+      open={open}
+      onOpenChange={onOpenChange}
+      mode={mode}
+      itemToEdit={directorToEditData}
+      schema={schema}
+      defaultValues={defaultValues}
+      steps={steps}
+      onSubmit={handleSubmit}
+      title="Director"
+      icon={<PersonStanding className="w-6 h-6" />}
+    />
   )
 }
