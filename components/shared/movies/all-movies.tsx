@@ -6,13 +6,17 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 import { Movie } from "@/actions/movies.actions"
-import { Search, Film, ArrowLeft, PlusIcon, Pencil } from "lucide-react"
+import {
+  Search, Film, PlusIcon, Pencil
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
 import { Director } from "@/actions/directors.actions"
 import MovieFormModal from "./movie-form-modal"
+
+import BackToGivenPage from "../back-to-given-page/back-to-given-page"
 
 type Props = {
   movies: Movie[],
@@ -47,14 +51,9 @@ export default function AllMovies(
 
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-24 sm:px-12">
-        <div className="min-w-[90vw] min-[950px]:min-w-[924px]">
-          <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
-            <Link href="/" className="flex items-center p-2 rounded-lg">
-              <ArrowLeft className="w-5 h-5 mr-1" />
-              Back to home page
-            </Link>
-          </Button>
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
+        <div className="min-w-[90vw] min-[950px]:min-w-[924px] relative">
+          <BackToGivenPage />
 
           <div className="flex justify-between items-center">
             <h1 className="text-4xl font-bold mb-6">All Movies</h1>

@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 
 import { Movie } from "@/actions/movies.actions"
-import Link from "next/link"
+import { Director } from "@/actions/directors.actions"
 
 import {
   Card,
@@ -14,12 +15,15 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 
-import { Calendar, User, Film, ArrowLeft, Pencil, Trash } from "lucide-react"
+import {
+  Calendar, User, Film, Pencil, Trash
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 import MovieFormModal from "./movie-form-modal"
 import DeleteMovieModal from "./delete-movie-modal"
-import { Director } from "@/actions/directors.actions"
+
+import BackToGivenPage from "../back-to-given-page/back-to-given-page"
 
 type Props = {
   movie: Movie,
@@ -88,14 +92,12 @@ export default function MoviePage(
 
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:mt-24 sm:px-12">
-        <div className="w-[90vw] sm:w-full lg:w-[50vw]">
-          <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
-            <Link href="/movies" className="flex items-center p-2 rounded-lg">
-              <ArrowLeft className="w-5 h-5 mr-1" />
-              Back to all movies
-            </Link>
-          </Button>
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
+        <div className="w-[90vw] sm:w-full lg:w-[50vw] relative">
+          <BackToGivenPage
+            link="/movies"
+            pageName="all movies"
+          />
 
           <Card className="w-full shadow-2xl bg-input/30 border border-input">
             <CardHeader className="border-b border-input pb-4 flex justify-between items-center">
