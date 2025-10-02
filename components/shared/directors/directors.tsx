@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import { easeInOut, motion } from "framer-motion"
 
 import { Director } from "@/actions/directors.actions"
 
@@ -54,7 +54,12 @@ export default function Directors(
   return (
     <>
       <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
-        <div className="w-[90vw] sm:w-full lg:w-[60vw] relative">
+        <motion.div
+          className="w-[90vw] sm:w-full lg:w-[60vw] relative"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: easeInOut }}  
+        >
           <BackToGivenPage />
 
           <Card className="shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
@@ -190,7 +195,7 @@ export default function Directors(
               </Table>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
     
       <DirectorFormModal
