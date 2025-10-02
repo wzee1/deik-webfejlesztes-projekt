@@ -88,7 +88,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen grid place-items-center">
       <div className="w-[80vw]">
-        <Card className="w-full max-w-md mx-auto relative">
+        <Card className="w-full max-w-md mx-auto relative shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input">
           <CardHeader>
             <BackToGivenPage />
 
@@ -109,6 +109,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <Input
                           placeholder="John Doe"
+                          className="backdrop-blur-xs"
                           disabled={isPending}
                           {...field}
                         />
@@ -127,6 +128,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <Input
                           type="email"
+                          className="backdrop-blur-xs"
                           placeholder="you@example.com"
                           disabled={isPending}
                           {...field}
@@ -146,6 +148,7 @@ export default function RegisterPage() {
                       <FormControl>
                         <Input
                           type="password"
+                          className="backdrop-blur-xs"
                           placeholder="••••••••"
                           disabled={isPending}
                           {...field}

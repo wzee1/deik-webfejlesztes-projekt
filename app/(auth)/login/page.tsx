@@ -85,7 +85,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen grid place-items-center">
       <div className="w-[80vw]">
-        <Card className="w-full max-w-md mx-auto relative">
+        <Card className="w-full max-w-md mx-auto relative shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input">
           <CardHeader>
             <BackToGivenPage />
 
@@ -106,6 +106,7 @@ export default function LoginPage() {
                       <FormControl>
                         <Input
                           type="email"
+                          className="backdrop-blur-xs"
                           placeholder="you@example.com"
                           disabled={isPending}
                           {...field}
@@ -125,6 +126,7 @@ export default function LoginPage() {
                       <FormControl>
                         <Input
                           type="password"
+                          className="backdrop-blur-xs"
                           placeholder="••••••••"
                           disabled={isPending}
                           {...field}
