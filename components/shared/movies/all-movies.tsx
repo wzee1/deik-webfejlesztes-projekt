@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import Cookies from "js-cookie" 
 
 import { Movie } from "@/actions/movies.actions"
 import {
@@ -51,6 +52,11 @@ export default function AllMovies(
     })
   }
 
+  const handleShowModalAgain = () => {
+    Cookies.remove("showMovieModal")
+    window.location.reload()
+  }
+
   return (
     <>
       <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
@@ -60,13 +66,23 @@ export default function AllMovies(
           <div className="flex justify-between items-center">
             <h1 className="text-4xl font-bold mb-6">All Movies</h1>
             
-            <Button
-              variant="primary"
-              className="w-8 h-8 rounded-2xl"
-              onClick={() => setOpenAddMovieModal(true)}
-            >
-              <PlusIcon className="w-8 h-8 text-white" />
-            </Button>
+            <div className="flex space-x-3 items-center">
+              <Button
+                variant="outline"
+                onClick={handleShowModalAgain}
+                disabled={isPending}
+              >
+                Get Latest Movies
+              </Button>
+
+              <Button
+                variant="primary"
+                className="w-8 h-8 rounded-2xl"
+                onClick={() => setOpenAddMovieModal(true)}
+              >
+                <PlusIcon className="w-8 h-8 text-white" />
+              </Button>
+            </div>
           </div>
           
           <div className="relative">
