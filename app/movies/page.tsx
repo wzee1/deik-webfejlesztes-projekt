@@ -17,7 +17,7 @@ type Props = {
 
 export default async function Movies({ searchParams }: Props) {
   const valid = await isAuthenticated()
-  if (!valid) redirect("/login")
+  if (!valid) redirect("/login?returnTo=movies")
 
   const params = (await searchParams)
   const movieId = params.id

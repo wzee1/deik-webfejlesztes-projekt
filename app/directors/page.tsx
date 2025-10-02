@@ -6,7 +6,7 @@ import { redirect } from "next/navigation"
 
 export default async function DirectorsPage() {
   const valid = await isAuthenticated()
-  if (!valid) redirect("/login")
+  if (!valid) redirect("/login?returnTo=directors")
 
   const result = await getDirectors()
 
