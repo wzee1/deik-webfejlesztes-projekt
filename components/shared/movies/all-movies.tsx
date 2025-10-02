@@ -17,16 +17,18 @@ import { Director } from "@/actions/directors.actions"
 import MovieFormModal from "./movie-form-modal"
 
 import BackToGivenPage from "../back-to-given-page/back-to-given-page"
+import LatestMoviesModal from "./latest-movies-modal"
 
 type Props = {
   movies: Movie[],
+  latestMovies: Movie[],
   directors: Director[],
   userId: string,
   isAdmin: boolean
 }
 
 export default function AllMovies(
-  { movies, directors, userId, isAdmin }: Props
+  { movies, latestMovies, directors, userId, isAdmin }: Props
 ) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -134,7 +136,7 @@ export default function AllMovies(
                       
                       {movie.director && (
                         <p className="max-w-[11rem] truncate">
-                          Director by {movie.director.name}
+                          Directed by {movie.director.name}
                         </p>
                       )}
                     </div>
@@ -156,6 +158,8 @@ export default function AllMovies(
           )}
         </div>
       </div>
+
+      <LatestMoviesModal latestMovies={latestMovies} />
     
       <MovieFormModal
         open={openAddMovieModal}
