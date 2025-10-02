@@ -93,7 +93,7 @@ export default function LatestMoviesModal(
                         <>
                           <br />
                           <span className="font-semibold">Description:</span><br />
-                          {movie.description}
+                          {truncateString(movie.description, 100)}
                         </>
                       )}
                     </p>
