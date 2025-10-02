@@ -40,6 +40,7 @@ export default function DeleteMovieModal({
       onOpenChange(false)
       router.push("/movies")
       router.refresh()
+      setIsPending(false)
     } else {
       toast.error(result.message)
       setIsPending(false)

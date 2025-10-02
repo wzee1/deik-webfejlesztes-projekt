@@ -8,7 +8,7 @@ import { ArrowLeft } from "lucide-react"
 import AllMovies from "@/components/shared/movies/all-movies"
 import MoviePage from "@/components/shared/movies/movie-page"
 
-import { isAuthenticated } from "@/lib/auth/auth-functions"
+import { getCurrentUser, isAuthenticated } from "@/lib/auth/auth-functions"
 import { redirect } from "next/navigation"
 
 type Props = {
@@ -17,7 +17,8 @@ type Props = {
 
 export default async function Movies({ searchParams }: Props) {
   const valid = await isAuthenticated()
-  if (!valid) redirect("/login")
+  const user = await getCurrentUser()
+  if (!valid || !user) redirect("/login?returnTo=movies")
 
   const params = (await searchParams)
   const movieId = params.id
@@ -57,6 +58,8 @@ export default async function Movies({ searchParams }: Props) {
       <AllMovies
         movies={moviesResult.data}
         directors={directorsResult.data}
+        userId={user.id}
+        isAdmin={user.role === "admin"}
       />
     )
   }
@@ -105,6 +108,8 @@ export default async function Movies({ searchParams }: Props) {
     <MoviePage
       movie={movieResult.data}
       directors={directorsResult.data}
+      userId={user.id}
+      isAdmin={user.role === "admin"}
     />
   )
 }

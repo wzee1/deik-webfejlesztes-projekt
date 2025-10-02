@@ -6,10 +6,13 @@ import { asc } from "drizzle-orm"
 
 import { z } from "zod"
 import { eq, and } from "drizzle-orm"
-import { TEST_USER } from "@/lib/db/seed/test-user"
 import { moviesTable } from "@/lib/db/schema"
 
-import { isAuthenticated, notAuthenticatedObject } from "@/lib/auth/auth-functions"
+import {
+  getCurrentUser,
+  isAuthenticated,
+  notAuthenticatedObject
+} from "@/lib/auth/auth-functions"
 
 export type Director = {
   id: number
@@ -21,23 +24,23 @@ export type Director = {
   addedByUser: {
     id: string
     name: string
-    email: string
-    emailVerified: boolean
-    image: string | null
-    createdAt: Date
-    updatedAt: Date
   }
 }
 
 export async function getDirectors() {
   try {
-    const valid = isAuthenticated()
+    const valid = await isAuthenticated()
     if (!valid) return notAuthenticatedObject
 
     const directorsWithUser = await db.query.directorsTable.findMany({
       orderBy: [asc(directorsTable.name)],
       with: {
-        addedByUser: true,
+        addedByUser: {
+          columns: {
+            id: true,
+            name: true,
+          }
+        },
       },
     })
 
@@ -86,8 +89,9 @@ const directorSchema = z.object({
 
 export async function createDirector(formData: FormData) {
   try {
-    const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const valid = await isAuthenticated()
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     const rawData = {
       name: formData.get("name")?.toString(),
@@ -128,7 +132,7 @@ export async function createDirector(formData: FormData) {
     const [newDirector] = await db.insert(directorsTable).values({
       name,
       birthYear,
-      addedBy: TEST_USER.id,
+      addedBy: user.id,
       createdAt: new Date()
     }).returning()
 
@@ -148,8 +152,9 @@ export async function createDirector(formData: FormData) {
 
 export async function updateDirector(id: number, formData: FormData) {
   try {
-    const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const valid = await isAuthenticated()
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     const existingDirector = await db.query.directorsTable.findFirst({
       where: eq(directorsTable.id, id)
@@ -161,9 +166,28 @@ export async function updateDirector(id: number, formData: FormData) {
       data: null
     }
 
+    if (
+      user.role === "user" &&
+      existingDirector.addedBy !== user.id
+    ) return {
+      success: false,
+      message: "You don't have permission to update this director!",
+      data: null
+    }
+
     const rawData = {
       name: formData.get("name")?.toString(),
-      birthYear: formData.get("birthYear")?.toString(),
+      // Added "or null" so it matches with db type:
+      birthYear: formData.get("birthYear")?.toString() || null
+    }
+
+    if (
+      rawData.name === existingDirector.name &&
+      rawData.birthYear === existingDirector.birthYear?.toString()
+    ) return {
+      success: false,
+      message: "No updates found, please modify the name or birth year to proceed!",
+      data: null
     }
 
     const validationResult = directorSchema.safeParse(rawData)
@@ -218,8 +242,9 @@ export async function updateDirector(id: number, formData: FormData) {
 
 export async function deleteDirector(id: number) {
   try {
-    const valid = isAuthenticated()
-    if (!valid) return notAuthenticatedObject
+    const valid = await isAuthenticated()
+    const user = await getCurrentUser()
+    if (!valid || !user) return notAuthenticatedObject
 
     const existingDirector = await db.query.directorsTable.findFirst({
       where: eq(directorsTable.id, id)
@@ -228,6 +253,15 @@ export async function deleteDirector(id: number) {
     if (!existingDirector) return {
       success: false,
       message: `Director with ID ${id} not found!`,
+      data: null
+    }
+
+    if (
+      user.role === "user" &&
+      existingDirector.addedBy !== user.id
+    ) return {
+      success: false,
+      message: "You don't have permission to delete this director!",
       data: null
     }
 

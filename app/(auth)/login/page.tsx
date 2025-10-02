@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 
 import { signIn } from "@/lib/auth/auth-client"
@@ -43,7 +43,10 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()
-  
+
+  const searchParams = useSearchParams()
+  const returnTo = searchParams.get("returnTo")
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -65,7 +68,9 @@ export default function LoginPage() {
         toast.error(result.error.message || "Failed to sign in")
       } else {
         toast.success("Signed in successfully!")
-        router.push("/")
+        router.push(
+          returnTo ? `/${returnTo}` : "/"
+        )
         router.refresh()
       }
     } catch (error) {
@@ -155,7 +160,14 @@ export default function LoginPage() {
                     <Button
                       variant="link"
                       className="p-0 h-auto text-white"
-                      onClick={() => router.push("/register")}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.currentTarget.blur()
+                        
+                        router.push(
+                          returnTo ? `/register?returnTo=${returnTo}` : "/register"
+                        )
+                      }}
                     >
                       Sign up
                     </Button>
