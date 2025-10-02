@@ -19,6 +19,7 @@ import MovieFormModal from "./movie-form-modal"
 
 import BackToGivenPage from "../back-to-given-page/back-to-given-page"
 import LatestMoviesModal from "./latest-movies-modal"
+import { easeInOut, motion } from "framer-motion"
 
 type Props = {
   movies: Movie[],
@@ -60,7 +61,12 @@ export default function AllMovies(
   return (
     <>
       <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
-        <div className="min-w-[90vw] min-[950px]:min-w-[924px] relative">
+        <motion.div
+          className="min-w-[90vw] min-[950px]:min-w-[924px] relative"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: easeInOut }}  
+        >
           <BackToGivenPage />
 
           <div className="flex justify-between items-center">
@@ -172,7 +178,7 @@ export default function AllMovies(
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
 
       <LatestMoviesModal latestMovies={latestMovies} />

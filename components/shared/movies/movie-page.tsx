@@ -3,6 +3,8 @@
 import { useState } from "react"
 import Link from "next/link"
 
+import { easeInOut, motion } from "framer-motion"
+
 import { Movie } from "@/actions/movies.actions"
 import { Director } from "@/actions/directors.actions"
 
@@ -93,7 +95,12 @@ export default function MoviePage(
   return (
     <>
       <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
-        <div className="w-[90vw] sm:w-full lg:w-[50vw] relative">
+        <motion.div
+          className="w-[90vw] sm:w-full lg:w-[50vw] relative"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: easeInOut }}
+        >
           <BackToGivenPage
             link="/movies"
             pageName="all movies"
@@ -151,7 +158,7 @@ export default function MoviePage(
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
 
       <MovieFormModal

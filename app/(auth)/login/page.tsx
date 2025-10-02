@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import Link from "next/link"
+import { easeInOut, motion } from "framer-motion"
 
 import { signIn } from "@/lib/auth/auth-client"
 import { toast } from "sonner"
@@ -84,7 +84,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen grid place-items-center">
-      <div className="w-[80vw]">
+      <motion.div
+        className="w-[80vw]"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: easeInOut }}
+      >
         <Card className="w-full max-w-md mx-auto relative shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input">
           <CardHeader>
             <BackToGivenPage />
@@ -176,7 +181,7 @@ export default function LoginPage() {
             </Form>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     </div>
   )
 }
