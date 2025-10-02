@@ -68,13 +68,13 @@ export default function AllMovies(
           </div>
           
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute z-10 left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type="text"
               placeholder="Search by title, director, or year..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-32 h-12 text-base"
+              className="pl-10 pr-32 h-12 text-base backdrop-blur-[3px]"
             />
 
             {searchTerm && (
@@ -101,7 +101,7 @@ export default function AllMovies(
               {filteredMovies.map((movie: Movie) => (
                 <div
                   key={movie.id}
-                  className="group bg-input/30 hover:bg-input/50 border border-input rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer"
+                  className="group bg-input/30 hover:bg-input/50 backdrop-blur-[3px] border border-input rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer"
                   onClick={() => handleMovieClick(movie.id)}
                 >
                   <div className="p-4">

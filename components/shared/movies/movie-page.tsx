@@ -99,7 +99,7 @@ export default function MoviePage(
             pageName="all movies"
           />
 
-          <Card className="w-full shadow-2xl bg-input/30 border border-input">
+          <Card className="w-full shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input">
             <CardHeader className="border-b border-input pb-4 flex justify-between items-center">
               <CardTitle className="flex items-center text-4xl font-extrabold tracking-tight text-white">
                 <Film className="w-8 h-8 mr-3 text-primaryColor" />

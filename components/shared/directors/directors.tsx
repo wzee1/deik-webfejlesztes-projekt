@@ -57,7 +57,7 @@ export default function Directors(
         <div className="w-[90vw] sm:w-full lg:w-[60vw] relative">
           <BackToGivenPage />
 
-          <Card className="shadow-2xl bg-input/30 border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
+          <Card className="shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
             <CardHeader className="flex justify-between items-center">
               <CardTitle className="text-3xl font-extrabold tracking-tight">
                 Directors
