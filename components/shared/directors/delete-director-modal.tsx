@@ -41,6 +41,7 @@ export default function DeleteDirectorModal({
       toast.success("Director deleted successfully!")
       onOpenChange(false)
       router.refresh()
+      setIsPending(false)
     } else {
       toast.error(result.message)
       setIsPending(false)
