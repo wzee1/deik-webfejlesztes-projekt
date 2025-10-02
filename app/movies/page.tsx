@@ -10,6 +10,7 @@ import MoviePage from "@/components/shared/movies/movie-page"
 
 import { getCurrentUser, isAuthenticated } from "@/lib/auth/auth-functions"
 import { redirect } from "next/navigation"
+import BackToGivenPage from "@/components/shared/back-to-given-page/back-to-given-page"
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | undefined }>
@@ -53,13 +54,6 @@ export default async function Movies({ searchParams }: Props) {
           <p className="text-lg text-gray-500 mt-2">
             Unexpected error occurred while fetching movies
           </p>
-
-          <Button asChild className="mt-6 bg-gray-200 hover:bg-gray-300/90">
-            <Link href="/">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to home page
-            </Link>
-          </Button>
         </div>
       </div>
     )
