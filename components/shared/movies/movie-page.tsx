@@ -23,11 +23,13 @@ import { Director } from "@/actions/directors.actions"
 
 type Props = {
   movie: Movie,
-  directors: Director[]
+  directors: Director[],
+  userId: string,
+  isAdmin: boolean
 }
 
 export default function MoviePage(
-  { movie, directors }: Props
+  { movie, directors, userId, isAdmin }: Props
 ) {
   const [openEditMovieModal, setOpenEditMovieModal] = useState(false)
   const [openRemoveMovieModal, setOpenRemoveMovieModal] = useState(false)
@@ -61,6 +63,7 @@ export default function MoviePage(
         <div className="flex items-center text-lg text-white">
           <User className="w-5 h-5 mr-2 text-white" />
           {movie.addedByUser.name}
+          {movie.addedByUser.id === userId && " (You)"}
         </div>
       )
     },
@@ -101,31 +104,33 @@ export default function MoviePage(
                 {movie.title}
               </CardTitle>
 
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="w-8 md:w-fit h-8 rounded-2xl"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setOpenEditMovieModal(true)
-                  }}
-                >
-                  <Pencil className="w-2 h-2 text-white" />
-                  <span className="max-lg:hidden">Edit movie</span>
-                </Button>
+              {(isAdmin || movie.addedByUser.id === userId) && (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="w-8 md:w-fit h-8 rounded-2xl"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setOpenEditMovieModal(true)
+                    }}
+                  >
+                    <Pencil className="w-2 h-2 text-white" />
+                    <span className="max-lg:hidden">Edit movie</span>
+                  </Button>
 
-                <Button
-                  variant="destructive"
-                  className="w-8 md:w-fit h-8 rounded-2xl hover:bg-red-500! transition-colors"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setOpenRemoveMovieModal(true)
-                  }}
-                >
-                  <Trash className="w-2 h-2 text-white" />
-                  <span className="max-lg:hidden">Delete movie</span>
-                </Button>
-              </div>
+                  <Button
+                    variant="destructive"
+                    className="w-8 md:w-fit h-8 rounded-2xl hover:bg-red-500! transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setOpenRemoveMovieModal(true)
+                    }}
+                  >
+                    <Trash className="w-2 h-2 text-white" />
+                    <span className="max-lg:hidden">Delete movie</span>
+                  </Button>
+                </div>
+              )}
             </CardHeader>
 
             <CardContent className="space-y-6">

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 import { Director } from "@/actions/directors.actions"
@@ -28,8 +27,14 @@ import {
 import DirectorFormModal from "./director-form-modal"
 import DeleteDirectorModal from "./delete-director-modal"
 
+type Props = {
+  directors: Director[],
+  userId: string,
+  isAdmin: boolean
+}
+
 export default function Directors(
-  { directors }: { directors: Director[] }
+  { directors, userId, isAdmin }: Props
 ) {
   const [openAddDirectorModal, setOpenAddDirectorModal] = useState(false)
   const [openEditDirectorModal, setOpenEditDirectorModal] = useState(false)
@@ -145,6 +150,7 @@ export default function Directors(
                         <div className="flex items-center">
                           <User className="w-4 h-4 mr-1" />
                           {director.addedByName}
+                          {director.addedByUser.id === userId && " (You)"}
                         </div>
                       </TableCell>
                       
@@ -154,31 +160,33 @@ export default function Directors(
                       </TableCell>
 
                       <TableCell>
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 flex gap-2">
-                          <Button
-                            variant="outline"
-                            className="w-4 md:w-fit h-6 rounded-2xl"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedDirector(director)
-                              setOpenEditDirectorModal(true)
-                            }}
-                          >
-                            <Pencil className="w-2 h-2 text-white" />
-                          </Button>
+                        {(isAdmin || director.addedByUser.id === userId) && (
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-2 right-2 flex gap-2">
+                            <Button
+                              variant="outline"
+                              className="w-4 md:w-fit h-6 rounded-2xl"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedDirector(director)
+                                setOpenEditDirectorModal(true)
+                              }}
+                            >
+                              <Pencil className="w-2 h-2 text-white" />
+                            </Button>
 
-                          <Button
-                            variant="destructive"
-                            className="w-4 md:w-fit h-6 rounded-2xl hover:bg-red-500! transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              setSelectedDirector(director)
-                              setOpenRemoveDirectorModal(true)
-                            }}
-                          >
-                            <Trash className="w-2 h-2 text-white" />
-                          </Button>
-                        </div>
+                            <Button
+                              variant="destructive"
+                              className="w-4 md:w-fit h-6 rounded-2xl hover:bg-red-500! transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedDirector(director)
+                                setOpenRemoveDirectorModal(true)
+                              }}
+                            >
+                              <Trash className="w-2 h-2 text-white" />
+                            </Button>
+                          </div>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

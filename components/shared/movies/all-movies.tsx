@@ -16,11 +16,13 @@ import MovieFormModal from "./movie-form-modal"
 
 type Props = {
   movies: Movie[],
-  directors: Director[]
+  directors: Director[],
+  userId: string,
+  isAdmin: boolean
 }
 
 export default function AllMovies(
-  { movies, directors }: Props
+  { movies, directors, userId, isAdmin }: Props
 ) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -109,17 +111,19 @@ export default function AllMovies(
                         {movie.title}
                       </h3>
 
-                      <Button
-                        variant="outline"
-                        className="w-8 h-8 rounded-2xl hover:bg-primaryColor! opacity-0 group-hover:opacity-100"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setMovieToEdit(movie)
-                          setOpenEditMovieModal(true)
-                        }}
-                      >
-                        <Pencil className="w-2 h-2 text-white" />
-                      </Button>
+                      {(isAdmin || movie.addedByUser.id === userId) && (
+                        <Button
+                          variant="outline"
+                          className="w-8 h-8 rounded-2xl hover:bg-primaryColor! opacity-0 group-hover:opacity-100"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setMovieToEdit(movie)
+                            setOpenEditMovieModal(true)
+                          }}
+                        >
+                          <Pencil className="w-2 h-2 text-white" />
+                        </Button>
+                      )}
                     </div>
                     
                     <div className="space-y-1 text-sm text-gray-300">
