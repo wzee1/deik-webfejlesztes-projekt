@@ -2,7 +2,6 @@
 
 import { db } from "@/lib/db"
 import { directorsTable, moviesTable } from "@/lib/db/schema"
-import { TEST_USER } from "@/lib/db/seed/test-user"
 
 import z from "zod"
 import { and, asc, eq, not } from "drizzle-orm"
@@ -30,9 +29,8 @@ export type Movie = {
 
 export async function getMovies() {
   try {
-    const valid = isAuthenticated()
-    const user = await getCurrentUser()
-    if (!valid || !user) return notAuthenticatedObject
+    const valid = await isAuthenticated()
+    if (!valid) return notAuthenticatedObject
 
     const movies = await db.query.moviesTable.findMany({
       orderBy: [asc(moviesTable.title)],
@@ -64,8 +62,8 @@ export async function getMovies() {
         createdAt: m.createdAt,
         director: m.director,
         addedByUser: {
-          id: user.id,
-          name: user.name || "Unknown user",
+          id: m.addedByUser.id,
+          name: m.addedByUser.name || "Unknown user",
         }
       }))
 
@@ -92,9 +90,8 @@ export async function getMovies() {
 
 export async function getMovieById(id: number) {
   try {
-    const valid = isAuthenticated()
-    const user = await getCurrentUser()
-    if (!valid || !user) return notAuthenticatedObject
+    const valid = await isAuthenticated()
+    if (!valid) return notAuthenticatedObject
 
     const movie = await db.query.moviesTable.findFirst({
       where: eq(moviesTable.id, id),
@@ -131,8 +128,8 @@ export async function getMovieById(id: number) {
       createdAt: movie.createdAt,
       director: movie.director,
       addedByUser: {
-        id: user.id,
-        name: user.name || "Unknown user",
+        id: movie.addedByUser.id,
+        name: movie.addedByUser.name || "Unknown user",
       }
     }
 
@@ -294,7 +291,10 @@ export async function updateMovie(id: number, formData: FormData) {
       data: null
     }
 
-    if (existingMovie.userId !== user.id) return {
+    if (
+      user.role === "user" &&
+      existingMovie.userId !== user.id
+    ) return {
       success: false,
       message: "You don't have permission to update this movie!",
       data: null
@@ -303,9 +303,20 @@ export async function updateMovie(id: number, formData: FormData) {
     // Extract form data
     const rawData = {
       title: formData.get("title")?.toString(),
-      releaseYear: formData.get("releaseYear")?.toString(),
-      description: formData.get("description")?.toString(),
-      directorId: formData.get("directorId")?.toString()
+      releaseYear: formData.get("releaseYear")?.toString() || null,
+      description: formData.get("description")?.toString() || null,
+      directorId: formData.get("directorId")?.toString() || null
+    }
+
+    if (
+      rawData.title === existingMovie.title &&
+      rawData.releaseYear === existingMovie.releaseYear?.toString() &&
+      rawData.description === existingMovie.description &&
+      rawData.directorId === existingMovie.directorId.toString()
+    ) return {
+      success: false,
+      message: "No updates found, please modify the name or birth year to proceed!",
+      data: null
     }
 
     // Validate with Zod
@@ -381,7 +392,7 @@ export async function updateMovie(id: number, formData: FormData) {
 
 export async function deleteMovie(id: number) {
   try {
-    const valid = isAuthenticated()
+    const valid = await isAuthenticated()
     const user = await getCurrentUser()
     if (!valid || !user) return notAuthenticatedObject
 
@@ -396,7 +407,10 @@ export async function deleteMovie(id: number) {
       data: null
     }
 
-    if (existingMovie.userId !== user.id) return {
+    if (
+      user.role === "user" &&
+      existingMovie.userId !== user.id
+    ) return {
       success: false,
       message: "You don't have permission to delete this movie!",
       data: null
