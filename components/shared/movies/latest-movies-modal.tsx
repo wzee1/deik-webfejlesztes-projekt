@@ -1,6 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+
+import { motion } from "framer-motion"
 import Cookies from "js-cookie"
 
 import { Movie } from "@/actions/movies.actions"
@@ -21,11 +24,32 @@ import { truncateString } from "@/lib/utils"
 
 const COOKIE_NAME = "showMovieModal"
 
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      delayChildren: 0.1,
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring" as const, stiffness: 100, damping: 20 }
+  },
+};
+
 export default function LatestMoviesModal(
   { latestMovies }: { latestMovies: Movie[] }
 ) {
   const [isOpen, setIsOpen] = useState(false)
   const [doNotShowAgain, setDoNotShowAgain] = useState(false)
+
+  const router = useRouter()
 
   useEffect(() => {
     const cookieValue = Cookies.get(COOKIE_NAME)
@@ -60,14 +84,21 @@ export default function LatestMoviesModal(
           </DialogDescription>
 
           {/* Render the top 3 latest movies here */}
-          <div className="space-y-3 pt-2">
+          <motion.div 
+            className="space-y-3 pt-2"
+            variants={containerVariants}
+            initial="hidden"
+            animate={isOpen ? "visible" : "hidden"}
+          >
             {moviesToShow.length > 0 ? (
               moviesToShow.map((movie, index) => (
-                <div 
+                <motion.div 
                   key={movie.id} 
-                  className="flex items-start p-3 bg-input rounded-lg shadow-sm"
+                  variants={itemVariants}
+                  className="flex items-start p-3 bg-input/30 hover:bg-input/50 rounded-lg shadow-sm transition-all duration-300 cursor-pointer"
+                  onClick={() => router.push(`/movies?id=${movie.id}`)}
                 >
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primaryColor grid place-items-center mr-3 font-semibold">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primaryColor grid place-items-center mr-3 font-semibold text-white shadow-md">
                     {index + 1}
                   </div>
                   <div className="w-full">
@@ -98,14 +129,14 @@ export default function LatestMoviesModal(
                       )}
                     </p>
                   </div>
-                </div>
+                </motion.div>
               ))
             ) : (
               <div className="text-center py-4 text-gray-400 border-dashed border-2 rounded-lg">
                 No latest movies available yet.
               </div>
             )}
-          </div>
+          </motion.div>
         </DialogHeader>
         
         <div className="flex items-center space-x-2 mt-6">
