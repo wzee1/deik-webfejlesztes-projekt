@@ -1,4 +1,4 @@
-import { getMovieById, getMovies, Movie } from "@/actions/movies.actions"
+import { getMovieById, getMovies } from "@/actions/movies.actions"
 import { getDirectors } from "@/actions/directors.actions"
 
 import Link from "next/link"
@@ -27,12 +27,22 @@ export default async function Movies({ searchParams }: Props) {
 
   if (!movieId) {
     const moviesResult = await getMovies()
+    const latestMovies = moviesResult.data
+      ? [...moviesResult.data].sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime()
+          const dateB = new Date(b.createdAt).getTime()
+          
+          // Descending order (newest first: b - a):
+          return dateB - dateA
+        }).slice(0, 3)
+      : null
 
     if (
       !moviesResult.success ||
       !moviesResult.data ||
       !directorsResult.success ||
-      !directorsResult.data
+      !directorsResult.data ||
+      !latestMovies
     ) return (
       <div className="min-h-screen grid place-items-center -translate-y-24">
         <div className="text-center">
@@ -57,6 +67,7 @@ export default async function Movies({ searchParams }: Props) {
     return (
       <AllMovies
         movies={moviesResult.data}
+        latestMovies={latestMovies}
         directors={directorsResult.data}
         userId={user.id}
         isAdmin={user.role === "admin"}
