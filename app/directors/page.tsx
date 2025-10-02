@@ -1,12 +1,13 @@
 import { getDirectors } from "@/actions/directors.actions"
 import Directors from "@/components/shared/directors/directors"
 
-import { isAuthenticated } from "@/lib/auth/auth-functions"
+import { getCurrentUser, isAuthenticated } from "@/lib/auth/auth-functions"
 import { redirect } from "next/navigation"
 
 export default async function DirectorsPage() {
   const valid = await isAuthenticated()
-  if (!valid) redirect("/login?returnTo=directors")
+  const user = await getCurrentUser()
+  if (!valid || !user) redirect("/login?returnTo=directors")
 
   const result = await getDirectors()
 
@@ -34,6 +35,12 @@ export default async function DirectorsPage() {
 
   const directors = result.data
   
-  return <Directors directors={directors} />
+  return (
+    <Directors
+      directors={directors}
+      userId={user.id}
+      isAdmin={user.role === "admin"}
+    />
+  )
 }
 
