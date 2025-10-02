@@ -19,6 +19,11 @@ export async function getCurrentUser() {
   return session?.user ?? null
 }
 
+export async function isAdmin() {
+  const user = await getCurrentUser()
+  return user?.role === "admin"
+}
+
 export const notAuthenticatedObject = {
   success: false,
   message: "You have to login to perform this action!",
