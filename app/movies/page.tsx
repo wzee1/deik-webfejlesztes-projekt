@@ -10,7 +10,6 @@ import MoviePage from "@/components/shared/movies/movie-page"
 
 import { getCurrentUser, isAuthenticated } from "@/lib/auth/auth-functions"
 import { redirect } from "next/navigation"
-import BackToGivenPage from "@/components/shared/back-to-given-page/back-to-given-page"
 
 type Props = {
   searchParams: Promise<{ [key: string]: string | undefined }>
