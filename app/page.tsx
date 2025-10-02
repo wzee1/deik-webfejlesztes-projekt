@@ -58,7 +58,7 @@ export default function Hero() {
             asChild
             size="lg"
             variant="outline"
-            className="bg-input/50 backdrop-blur-sm border border-input px-8 py-6 text-lg rounded-full transition-all duration-300"
+            className="bg-input/10 backdrop-blur-[3px] border border-input px-8 py-6 text-lg rounded-full transition-all duration-300"
           >
             <Link href="/directors">
               <PersonStanding className="w-5 h-5" />

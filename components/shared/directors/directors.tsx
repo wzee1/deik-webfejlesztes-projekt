@@ -19,13 +19,14 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 import {
-  ArrowLeft, Calendar, Pencil,
-  PlusIcon,
+  Calendar, Pencil, PlusIcon,
   Search, Trash, User
 } from "lucide-react"
 
 import DirectorFormModal from "./director-form-modal"
 import DeleteDirectorModal from "./delete-director-modal"
+
+import BackToGivenPage from "../back-to-given-page/back-to-given-page"
 
 type Props = {
   directors: Director[],
@@ -52,16 +53,11 @@ export default function Directors(
 
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-24 sm:px-12">
-        <div className="w-[90vw] sm:w-full lg:w-[60vw]">
-          <Button variant="ghost" className="text-gray-300 hover:text-white p-0 mb-2">
-            <Link href="/" className="flex items-center p-2 rounded-lg">
-              <ArrowLeft className="w-5 h-5 mr-1" />
-              Back to home page
-            </Link>
-          </Button>
+      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
+        <div className="w-[90vw] sm:w-full lg:w-[60vw] relative">
+          <BackToGivenPage />
 
-          <Card className="shadow-2xl bg-input/30 border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
+          <Card className="shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input w-[90vw] sm:w-full lg:w-[60vw] max-h-[45rem] overflow-y-auto">
             <CardHeader className="flex justify-between items-center">
               <CardTitle className="text-3xl font-extrabold tracking-tight">
                 Directors

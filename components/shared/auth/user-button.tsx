@@ -16,7 +16,10 @@ export default function UserButton() {
   if (!session) {
     return (
       <div className="flex gap-2">
-        <Button variant="ghost" asChild>
+        <Button
+          variant="ghost" asChild
+          className="border border-input backdrop-blur-[2px] hover:bg-primaryColor!"
+        >
           <Link href="/login">Sign In</Link>
         </Button>
         <Button variant="primary" asChild>
@@ -29,7 +32,7 @@ export default function UserButton() {
   return (
     <Button
       variant="ghost"
-      className="hover:bg-primaryColor!"
+      className="border border-input backdrop-blur-[2px] hover:bg-primaryColor!"
       onClick={() => {
         signOut()
         toast.success("Signed out successfully!")

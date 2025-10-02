@@ -30,7 +30,9 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowLeft, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
+
+import BackToGivenPage from "@/components/shared/back-to-given-page/back-to-given-page"
 
 // Define the schema for login (only email and password)
 const loginSchema = z.object({
@@ -83,14 +85,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen grid place-items-center">
       <div className="w-[80vw]">
-        <Card className="w-full max-w-md mx-auto relative">
+        <Card className="w-full max-w-md mx-auto relative shadow-2xl bg-input/30 backdrop-blur-[3px] border border-input">
           <CardHeader>
-            <Button variant="ghost" className="text-gray-300 hover:text-white p-0 absolute -top-12 left-0">
-              <Link href="/" className="flex items-center p-2 rounded-lg">
-                <ArrowLeft className="w-5 h-5 mr-1" />
-                Back to home page
-              </Link>
-            </Button>
+            <BackToGivenPage />
 
             <CardTitle className="text-2xl">Welcome Back</CardTitle>
             <CardDescription>
@@ -109,6 +106,7 @@ export default function LoginPage() {
                       <FormControl>
                         <Input
                           type="email"
+                          className="backdrop-blur-xs"
                           placeholder="you@example.com"
                           disabled={isPending}
                           {...field}
@@ -128,6 +126,7 @@ export default function LoginPage() {
                       <FormControl>
                         <Input
                           type="password"
+                          className="backdrop-blur-xs"
                           placeholder="••••••••"
                           disabled={isPending}
                           {...field}
