@@ -34,6 +34,9 @@ type Props = {
   isAdmin: boolean
 }
 
+/**
+ * Renders a table where users can read the full list of all directors.
+ */
 export default function Directors(
   { directors, userId, isAdmin }: Props
 ) {
