@@ -9,6 +9,14 @@ type Props = {
   className?: string
 }
 
+/**
+ * A reusable component for creating a persistent "Back to X" link.
+ *
+ * @param {BackToGivenPageProps} props - Properties of the component.
+ * @param {string} props.link - The link to navigate to.
+ * @param {string} props.pageName - Page's name to navigate to.
+ * @param {string} props.className - Additional classes.
+ */
 export default function BackToGivenPage({
   link = "/",
   pageName = "home page",

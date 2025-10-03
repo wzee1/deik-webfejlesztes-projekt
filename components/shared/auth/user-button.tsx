@@ -17,6 +17,9 @@ const transitionVariants = {
   exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
 }
 
+/**
+ * Handles the animated render of sign-up/login OR sign out buttons.
+ */
 export default function UserButton() {
   const { data: session } = useSession()
   const router = useRouter()
