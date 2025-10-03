@@ -132,3 +132,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Scroll bar */
+html::-webkit-scrollbar,
+div[data-slot="table-container"]::-webkit-scrollbar {
+  width: 0.85em;
+  background-color: var(--background);
+}
+
+html::-webkit-scrollbar-thumb,
+div[data-slot="table-container"]::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+}
+
+html, div[data-slot="table-container"] {
+  scrollbar-color: var(--primary-color) var(--background);
+}
