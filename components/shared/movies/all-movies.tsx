@@ -29,6 +29,9 @@ type Props = {
   isAdmin: boolean
 }
 
+/**
+ * Renders a table where users can read the full list of all movies.
+ */
 export default function AllMovies(
   { movies, latestMovies, directors, userId, isAdmin }: Props
 ) {

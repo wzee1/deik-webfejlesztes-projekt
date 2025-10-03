@@ -34,6 +34,9 @@ type Props = {
   isAdmin: boolean
 }
 
+/**
+ * Renders a page dedicated to a given movie and its information.
+ */
 export default function MoviePage(
   { movie, directors, userId, isAdmin }: Props
 ) {
