@@ -18,7 +18,7 @@ export default function Hero() {
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
       <div className="relative z-10 container mx-auto px-4 py-20 text-center">
         <motion.h1 
-          className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6"
+          className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6"
           initial={initialObject}
           animate={animateObject}
           transition={transitionObject}
@@ -30,7 +30,7 @@ export default function Hero() {
         </motion.h1>
 
         <motion.p 
-          className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12"
+          className="text-sm sm:text-base md:text-xl text-gray-300 max-w-md md:max-w-2xl mx-auto mb-12"
           initial={initialObject}
           animate={animateObject}
           transition={{ ...transitionObject, delay: 0.2 }}
@@ -49,10 +49,10 @@ export default function Hero() {
             asChild
             size="lg"
             variant="primary"
-            className="py-6 text-lg rounded-full shadow-lg transition-all duration-300"
+            className="py-6 text-sm md:text-lg rounded-full shadow-lg transition-all duration-300"
           >
             <Link href="/movies">
-              <Film className="w-5 h-5" />
+              <Film className="w-3 md:w-5 h-3 md:h-5" />
               Browse Movies
             </Link>
           </Button>
@@ -61,10 +61,10 @@ export default function Hero() {
             asChild
             size="lg"
             variant="outline"
-            className="bg-input/10 backdrop-blur-[3px] border border-input px-8 py-6 text-lg rounded-full transition-all duration-300"
+            className="bg-input/10 backdrop-blur-[3px] border border-input px-8 py-6 text-sm md:text-lg rounded-full transition-all duration-300"
           >
             <Link href="/directors">
-              <PersonStanding className="w-5 h-5" />
+              <PersonStanding className="w-3 md:w-5 h-3 md:h-5" />
               Browse Directors
             </Link>
           </Button>
