@@ -27,6 +27,9 @@ export type Director = {
   }
 }
 
+/** 
+ * @returns An array of all the directors.
+ */
 export async function getDirectors() {
   try {
     const valid = await isAuthenticated()
@@ -150,6 +153,12 @@ export async function createDirector(formData: FormData) {
   }
 }
 
+/**
+ * Updates an existing director.
+ *
+ * @param {number} id - The ID of the director to update.
+ * @param {FormData} formData - Contains 'name' (string) and 'birthYear' (string or null) fields.
+ */
 export async function updateDirector(id: number, formData: FormData) {
   try {
     const valid = await isAuthenticated()
@@ -240,6 +249,11 @@ export async function updateDirector(id: number, formData: FormData) {
   }
 }
 
+/**
+ * Deletes a director by ID.
+ * 
+ * @param id - The ID of the director to delete.
+ */
 export async function deleteDirector(id: number) {
   try {
     const valid = await isAuthenticated()

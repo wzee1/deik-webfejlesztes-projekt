@@ -27,6 +27,9 @@ export type Movie = {
   }
 }
 
+/**
+ * @returns An array of all the movies.
+ */
 export async function getMovies() {
   try {
     const valid = await isAuthenticated()
@@ -88,6 +91,10 @@ export async function getMovies() {
   }
 }
 
+/**
+ * @param id - The ID of the movie. 
+ * @returns The movie fetched by ID.
+ */
 export async function getMovieById(id: number) {
   try {
     const valid = await isAuthenticated()
@@ -169,6 +176,11 @@ const createMovieSchema = z.object({
     .refine((val) => !isNaN(val), "Invalid director ID!")
 })
 
+/**
+ * Creates a new movie record in the database.
+ *
+ * @param {FormData} formData - Contains `title`, `releaseYear`, `description`, and `directorId`.
+ */
 export async function createMovie(formData: FormData) {
   try {
     const valid = isAuthenticated()
@@ -274,6 +286,12 @@ const updateMovieSchema = z.object({
     .refine((val) => !isNaN(val), "Invalid director ID!")
 })
 
+/**
+ * Update a movie record in the database by ID.
+ *
+ * @param {number} id - The ID of the movie to update.
+ * @param {FormData} formData - Contains `title`, `releaseYear`, `description`, and `directorId`.
+ */
 export async function updateMovie(id: number, formData: FormData) {
   try {
     const valid = isAuthenticated()
@@ -390,6 +408,11 @@ export async function updateMovie(id: number, formData: FormData) {
   }
 }
 
+/**
+ * Deletes a movie record from the database by ID.
+ *
+ * @param {number} id - The ID of the movie to delete.
+ */
 export async function deleteMovie(id: number) {
   try {
     const valid = await isAuthenticated()
