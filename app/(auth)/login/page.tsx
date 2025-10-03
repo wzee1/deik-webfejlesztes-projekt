@@ -42,6 +42,9 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>
 
+/**
+ * Renders the login page. 
+ */
 export default function LoginPage() {
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()

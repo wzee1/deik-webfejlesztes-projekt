@@ -15,6 +15,9 @@ type Props = {
   searchParams: Promise<{ [key: string]: string | undefined }>
 }
 
+/**
+ * Renders the movies page. 
+ */
 export default async function Movies({ searchParams }: Props) {
   const valid = await isAuthenticated()
   const user = await getCurrentUser()

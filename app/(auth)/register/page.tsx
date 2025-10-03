@@ -43,6 +43,9 @@ const registerSchema = z.object({
 
 type RegisterFormValues = z.infer<typeof registerSchema>
 
+/**
+ * Renders the sign up page. 
+ */
 export default function RegisterPage() {
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()

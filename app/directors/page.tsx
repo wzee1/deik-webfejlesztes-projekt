@@ -4,6 +4,9 @@ import Directors from "@/components/shared/directors/directors"
 import { getCurrentUser, isAuthenticated } from "@/lib/auth/auth-functions"
 import { redirect } from "next/navigation"
 
+/**
+ * Renders the directors page. 
+ */
 export default async function DirectorsPage() {
   const valid = await isAuthenticated()
   const user = await getCurrentUser()
