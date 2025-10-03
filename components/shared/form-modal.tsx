@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 
-import { motion, AnimatePresence } from "framer-motion"
+import { AnimatePresence } from "framer-motion"
 
-import { z, ZodType } from "zod"
+import { ZodType } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, FieldValues } from "react-hook-form"
+import { useForm } from "react-hook-form"
 
 import { toast } from "sonner"
 
@@ -19,43 +19,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { Form } from "@/components/ui/form"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 
-import { Loader2, ArrowLeft, ArrowRight, Check } from "lucide-react"
+import {
+  Loader2, ArrowLeft,
+  ArrowRight, Check
+} from "lucide-react"
 import { cn } from "@/lib/utils"
-import React from "react"
-
-const pageVariants = {
-  enter: {
-    opacity: 1,
-    x: 0,
-    transition: { type: "tween" as const, duration: 0.3 }
-  },
-  exit: (direction: number) => {
-    return {
-      opacity: 0,
-      x: direction > 0 ? -20 : 20,
-      transition: { type: "tween" as const, duration: 0.2 }
-    }
-  },
-  initial: (direction: number) => {
-    return {
-      opacity: 0,
-      x: direction > 0 ? 20 : -20,
-    }
-  },
-}
 
 type FormModalProps<T> = {
   open: boolean
@@ -76,6 +48,9 @@ type FormModalProps<T> = {
   icon: React.ReactNode
 }
 
+/**
+ * Unified modal handler for director-form-modal.tsx and movie-form-modal.tsx. 
+ */
 export default function FormModal<T>({
   open,
   onOpenChange,

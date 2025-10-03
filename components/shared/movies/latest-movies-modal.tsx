@@ -41,8 +41,11 @@ const itemVariants = {
     opacity: 1,
     transition: { type: "spring" as const, stiffness: 100, damping: 20 }
   },
-};
+}
 
+/**
+ * Renders a modal of the 3 latest movies.
+ */
 export default function LatestMoviesModal(
   { latestMovies }: { latestMovies: Movie[] }
 ) {

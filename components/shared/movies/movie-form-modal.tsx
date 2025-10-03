@@ -199,6 +199,9 @@ const steps: Array<{
   },
 ]
 
+/**
+ * Renders a modal where users can add / edit a movie.
+ */
 export default function MovieFormModal({
   open,
   onOpenChange,

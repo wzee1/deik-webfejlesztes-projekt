@@ -24,6 +24,9 @@ type Props = {
   directorToDelete: Director | undefined
 }
 
+/**
+ * Renders a modal where users can delete a director.
+ */
 export default function DeleteDirectorModal({
   open, onOpenChange, directorToDelete
 }: Props) {

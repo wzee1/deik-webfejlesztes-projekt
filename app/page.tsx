@@ -6,6 +6,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Film, PersonStanding } from "lucide-react"
 
+/**
+ * Renders the main page (hero section only). 
+ */
 export default function Hero() {
   const initialObject = { opacity: 0, y: 20 }
   const animateObject = { opacity: 1, y: 0 }
