@@ -97,9 +97,9 @@ export default function MoviePage(
 
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
+      <div className="h-[calc(100vh-96px)] grid justify-center pt-48 lg:pt-40 px-4 sm:px-12">
         <motion.div
-          className="w-[90vw] sm:w-full lg:w-[50vw] relative"
+          className="w-[90vw] lg:w-[50vw] xl:w-[40vw] relative"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: easeInOut }}

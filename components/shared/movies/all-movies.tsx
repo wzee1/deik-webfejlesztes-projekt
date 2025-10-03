@@ -63,7 +63,7 @@ export default function AllMovies(
 
   return (
     <>
-      <div className="h-[calc(100vh-96px)] grid justify-center lg:pt-40 sm:px-12">
+      <div className="h-[calc(100vh-96px)] grid justify-center pt-48 lg:pt-40 px-4 sm:px-12">
         <motion.div
           className="min-w-[90vw] min-[950px]:min-w-[924px] relative"
           initial={{ opacity: 0, y: -10 }}
@@ -72,8 +72,8 @@ export default function AllMovies(
         >
           <BackToGivenPage />
 
-          <div className="flex justify-between items-center">
-            <h1 className="text-4xl font-bold mb-6">All Movies</h1>
+          <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6">
+            <h1 className="text-4xl font-bold mb-2">All Movies</h1>
             
             <div className="flex space-x-3 items-center">
               <Button
@@ -101,11 +101,11 @@ export default function AllMovies(
               placeholder="Search by title, director, or year..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-32 h-12 text-base backdrop-blur-[3px]"
+              className="pl-10 sm:pr-32 h-12 text-base backdrop-blur-[3px]"
             />
 
             {searchTerm && (
-              <p className="absolute right-4 top-[2.5px] text-sm text-gray-200 mt-3">
+              <p className="max-sm:hidden absolute right-4 top-[2.5px] text-sm text-gray-200 mt-3">
                 Found {filteredMovies.length} {filteredMovies.length === 1 ? "movie" : "movies"}
               </p>
             )}
