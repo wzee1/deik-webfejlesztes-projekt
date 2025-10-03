@@ -24,6 +24,9 @@ type Props = {
   movieToDelete: Movie
 }
 
+/**
+ * Renders a modal where users can delete a movie.
+ */
 export default function DeleteMovieModal({
   open, onOpenChange, movieToDelete
 }: Props) {
