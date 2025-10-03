@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { easeInOut, motion } from "framer-motion"
 
@@ -46,7 +46,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>
 /**
  * Renders the sign up page. 
  */
-export default function RegisterPage() {
+function RegisterPageContent() {
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()
 
@@ -89,6 +89,109 @@ export default function RegisterPage() {
   }
 
   return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Name</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="John Doe"
+                  className="backdrop-blur-xs"
+                  disabled={isPending}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  className="backdrop-blur-xs"
+                  placeholder="you@example.com"
+                  disabled={isPending}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  className="backdrop-blur-xs"
+                  placeholder="••••••••"
+                  disabled={isPending}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          type="submit"
+          variant="primary"
+          className="w-full"
+          disabled={isPending}
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            "Sign Up"
+          )}
+        </Button>
+
+        <div className="text-sm">
+          <span>
+            Already have an account?{" "}
+            <Button
+              variant="link"
+              className="p-0 h-auto text-white"
+              onClick={(e) => {
+                e.preventDefault()
+                e.currentTarget.blur()
+
+                router.push(
+                  returnTo ? `/login?returnTo=${returnTo}` : "/login"
+                )
+              }}
+            >
+              Sign in
+            </Button>
+          </span>
+        </div>
+      </form>
+    </Form>
+  )
+}
+
+export default function RegisterPage() {
+  return (
     <div className="min-h-screen grid place-items-center">
       <motion.div
         className="w-[80vw]"
@@ -106,104 +209,9 @@ export default function RegisterPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="John Doe"
-                          className="backdrop-blur-xs"
-                          disabled={isPending}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          className="backdrop-blur-xs"
-                          placeholder="you@example.com"
-                          disabled={isPending}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          className="backdrop-blur-xs"
-                          placeholder="••••••••"
-                          disabled={isPending}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full"
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Creating account...
-                    </>
-                  ) : (
-                    "Sign Up"
-                  )}
-                </Button>
-
-                <div className="text-sm">
-                  <span>
-                    Already have an account?{" "}
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-white"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.currentTarget.blur()
-
-                        router.push(
-                          returnTo ? `/login?returnTo=${returnTo}` : "/login"
-                        )
-                      }}
-                    >
-                      Sign in
-                    </Button>
-                  </span>
-                </div>
-              </form>
-            </Form>
+            <Suspense fallback={<div>Loading...</div>}>
+              <RegisterPageContent />
+            </Suspense>
           </CardContent>
         </Card>
       </motion.div>

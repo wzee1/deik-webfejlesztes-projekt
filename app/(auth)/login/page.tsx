@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { easeInOut, motion } from "framer-motion"
 
@@ -45,7 +45,7 @@ type LoginFormValues = z.infer<typeof loginSchema>
 /**
  * Renders the login page. 
  */
-export default function LoginPage() {
+function LoginPageContent() {
   const [isPending, setIsPending] = useState(false)
   const router = useRouter()
 
@@ -86,6 +86,90 @@ export default function LoginPage() {
   }
 
   return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  className="backdrop-blur-xs"
+                  placeholder="you@example.com"
+                  disabled={isPending}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input
+                  type="password"
+                  className="backdrop-blur-xs"
+                  placeholder="••••••••"
+                  disabled={isPending}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <Button
+          type="submit"
+          variant="primary"
+          className="w-full"
+          disabled={isPending}
+        >
+          {isPending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            "Sign In"
+          )}
+        </Button>
+
+        <div className="text-sm">
+          <span>
+            Don't have an account?{" "}
+            <Button
+              variant="link"
+              className="p-0 h-auto text-white"
+              onClick={(e) => {
+                e.preventDefault()
+                e.currentTarget.blur()
+                
+                router.push(
+                  returnTo ? `/register?returnTo=${returnTo}` : "/register"
+                )
+              }}
+            >
+              Sign up
+            </Button>
+          </span>
+        </div>
+      </form>
+    </Form>
+  )
+}
+
+export default function LoginPage() {
+  return (
     <div className="min-h-screen grid place-items-center">
       <motion.div
         className="w-[80vw]"
@@ -103,85 +187,9 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          className="backdrop-blur-xs"
-                          placeholder="you@example.com"
-                          disabled={isPending}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          className="backdrop-blur-xs"
-                          placeholder="••••••••"
-                          disabled={isPending}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full"
-                  disabled={isPending}
-                >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Signing in...
-                    </>
-                  ) : (
-                    "Sign In"
-                  )}
-                </Button>
-
-                <div className="text-sm">
-                  <span>
-                    Don't have an account?{" "}
-                    <Button
-                      variant="link"
-                      className="p-0 h-auto text-white"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.currentTarget.blur()
-                        
-                        router.push(
-                          returnTo ? `/register?returnTo=${returnTo}` : "/register"
-                        )
-                      }}
-                    >
-                      Sign up
-                    </Button>
-                  </span>
-                </div>
-              </form>
-            </Form>
+            <Suspense fallback={<div>Loading...</div>}>
+              <LoginPageContent />
+            </Suspense>
           </CardContent>
         </Card>
       </motion.div>
