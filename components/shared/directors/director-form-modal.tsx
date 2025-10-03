@@ -30,6 +30,9 @@ type Props = {
   directorToEdit?: Director
 }
 
+/**
+ * Renders a modal where users can add / edit a director.
+ */
 export default function DirectorFormModal({
   open,
   onOpenChange,
